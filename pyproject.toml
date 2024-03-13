@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "LLMSmith"
+version = "0.1.0"
+description = ""
+authors = ["Dheeraj Gopinath <dheeraj.gopinath@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+openai = {version = "^1.13.3", optional = true}
+anthropic = {version = "^0.19.2", optional = true}
+google-generativeai = {version = "^0.4.0", optional = true}
+
+[tool.poetry.extras]
+openai = ["openai"]
+claude = ["anthropic"]
+gemini = ["google-generativeai"]
+all = ["openai", "anthropic", "google-generativeai"]
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.3.2"
+black = "^24.2.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.2.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
