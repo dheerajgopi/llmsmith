@@ -1,3 +1,4 @@
+import logging
 from typing import List, Union
 from llmsmith.llm.base import ChatLLM
 from llmsmith.llm.models import LLMChatInput, LLMChatReply, LLMChatResponseContent
@@ -11,6 +12,8 @@ except ImportError:
         "The 'anthropic' library is required to use Claude. You can install it with `pip install llmsmith[claude]`"
     )
 
+
+log = logging.getLogger(__name__)
 
 class Claude(ChatLLM):
     """Anthropic Claude specific implementation of :class:`llmsmith.llm.base.ChatLLM`.
@@ -61,6 +64,8 @@ class Claude(ChatLLM):
 
         messages_payload: List[dict] = [{"role": msg.role, "content": msg.content} for msg in messages.messages]
 
+        log.debug(f"Anthropic Claude chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}")
+
         completions: Message = self.client.messages.create(
             system=sys_prompt if sys_prompt else NOT_GIVEN,
             max_tokens=max_tokens,
@@ -68,6 +73,8 @@ class Claude(ChatLLM):
             model=model_name,
             temperature=temp,
         )
+
+        log.debug(f"Anthropic Claude chat response: {completions}")
 
         return LLMChatReply(
             content=[LLMChatResponseContent(content=content.text, type="text") for content in completions.content],

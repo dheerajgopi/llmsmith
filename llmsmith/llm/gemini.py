@@ -1,3 +1,4 @@
+import logging
 from typing import List, Union
 from llmsmith.llm.base import ChatLLM
 from llmsmith.llm.models import LLMChatInput, LLMChatReply, LLMChatResponseContent
@@ -9,6 +10,8 @@ except ImportError:
         "The 'google.generativeai' library is required to use Gemini. You can install it with `pip install llmsmith[gemini]`"
     )
 
+
+log = logging.getLogger(__name__)
 
 class Gemini(ChatLLM):
     """Google Gemini specific implementation of :class:`llmsmith.llm.base.ChatLLM`.
@@ -72,6 +75,8 @@ class Gemini(ChatLLM):
 
         messages_payload: List[dict] = [{"role": msg.role, "parts": [msg.content]} for msg in messages.messages]
 
+        log.debug(f"Google Gemini chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}")
+
         completions: genai.types.GenerateContentResponse = (
             self.gen_model.generate_content(
                 contents=messages_payload,
@@ -80,6 +85,8 @@ class Gemini(ChatLLM):
                 tools=tools
             )
         )
+
+        log.debug(f"Google Gemini chat response: {completions}")
 
         return LLMChatReply(
             content=[LLMChatResponseContent(content=candidate.content, type="text") for candidate in completions.candidates],

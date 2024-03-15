@@ -1,3 +1,4 @@
+import logging
 from typing import List, Union
 from llmsmith.llm.base import ChatLLM
 from llmsmith.llm.models import LLMChatInput, LLMChatReply, LLMChatResponseContent
@@ -10,6 +11,8 @@ except ImportError:
         "The 'openai' library is required to use OpenAI. You can install it with `pip install llmsmith[openai]`"
     )
 
+
+log = logging.getLogger(__name__)
 
 class OpenAI(ChatLLM):
     """OpenAI specific implementation of :class:`llmsmith.llm.base.ChatLLM`.
@@ -56,9 +59,13 @@ class OpenAI(ChatLLM):
             messages_payload.append({"role": "system", "content": sys_prompt})
         messages_payload.extend([{"role": msg.role, "content": msg.content} for msg in messages.messages])
 
+        log.debug(f"OpenAI chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}")
+
         completions: ChatCompletion = self.client.chat.completions.create(
             model=model_name, messages=messages_payload, temperature=temp
         )
+
+        log.debug(f"OpenAI chat response: {completions}")
 
         return LLMChatReply(
             content=[LLMChatResponseContent(content=choice.message.content, type="text") for choice in completions.choices],
