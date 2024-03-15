@@ -14,6 +14,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
+
 class OpenAI(ChatLLM):
     """OpenAI specific implementation of :class:`llmsmith.llm.base.ChatLLM`.
 
@@ -57,9 +58,13 @@ class OpenAI(ChatLLM):
 
         if sys_prompt:
             messages_payload.append({"role": "system", "content": sys_prompt})
-        messages_payload.extend([{"role": msg.role, "content": msg.content} for msg in messages.messages])
+        messages_payload.extend(
+            [{"role": msg.role, "content": msg.content} for msg in messages.messages]
+        )
 
-        log.debug(f"OpenAI chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}")
+        log.debug(
+            f"OpenAI chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}"
+        )
 
         completions: ChatCompletion = self.client.chat.completions.create(
             model=model_name, messages=messages_payload, temperature=temp
@@ -68,6 +73,9 @@ class OpenAI(ChatLLM):
         log.debug(f"OpenAI chat response: {completions}")
 
         return LLMChatReply(
-            content=[LLMChatResponseContent(content=choice.message.content, type="text") for choice in completions.choices],
-            internal_response=completions
+            content=[
+                LLMChatResponseContent(content=choice.message.content, type="text")
+                for choice in completions.choices
+            ],
+            internal_response=completions,
         )

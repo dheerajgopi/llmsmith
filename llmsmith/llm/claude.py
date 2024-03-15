@@ -15,6 +15,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
+
 class Claude(ChatLLM):
     """Anthropic Claude specific implementation of :class:`llmsmith.llm.base.ChatLLM`.
 
@@ -62,9 +63,13 @@ class Claude(ChatLLM):
         max_tokens: int = kwargs.get("max_tokens", 1024)
         sys_prompt: Union[str, None] = kwargs.get("system_prompt")
 
-        messages_payload: List[dict] = [{"role": msg.role, "content": msg.content} for msg in messages.messages]
+        messages_payload: List[dict] = [
+            {"role": msg.role, "content": msg.content} for msg in messages.messages
+        ]
 
-        log.debug(f"Anthropic Claude chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}")
+        log.debug(
+            f"Anthropic Claude chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}"
+        )
 
         completions: Message = self.client.messages.create(
             system=sys_prompt if sys_prompt else NOT_GIVEN,
@@ -77,6 +82,9 @@ class Claude(ChatLLM):
         log.debug(f"Anthropic Claude chat response: {completions}")
 
         return LLMChatReply(
-            content=[LLMChatResponseContent(content=content.text, type="text") for content in completions.content],
-            internal_response=completions
+            content=[
+                LLMChatResponseContent(content=content.text, type="text")
+                for content in completions.content
+            ],
+            internal_response=completions,
         )

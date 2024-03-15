@@ -13,6 +13,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
+
 class Gemini(ChatLLM):
     """Google Gemini specific implementation of :class:`llmsmith.llm.base.ChatLLM`.
 
@@ -69,26 +70,31 @@ class Gemini(ChatLLM):
         safety_settings: Union[genai.types.SafetySettingDict, None] = kwargs.get(
             "safety_settings"
         )
-        tools: Union[genai.types.FunctionLibraryType, None] = kwargs.get(
-            "tools"
+        tools: Union[genai.types.FunctionLibraryType, None] = kwargs.get("tools")
+
+        messages_payload: List[dict] = [
+            {"role": msg.role, "parts": [msg.content]} for msg in messages.messages
+        ]
+
+        log.debug(
+            f"Google Gemini chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}"
         )
-
-        messages_payload: List[dict] = [{"role": msg.role, "parts": [msg.content]} for msg in messages.messages]
-
-        log.debug(f"Google Gemini chat request: PAYLOAD: {messages_payload}\n OPTIONS: {kwargs}")
 
         completions: genai.types.GenerateContentResponse = (
             self.gen_model.generate_content(
                 contents=messages_payload,
                 generation_config=generation_config,
                 safety_settings=safety_settings,
-                tools=tools
+                tools=tools,
             )
         )
 
         log.debug(f"Google Gemini chat response: {completions}")
 
         return LLMChatReply(
-            content=[LLMChatResponseContent(content=candidate.content, type="text") for candidate in completions.candidates],
-            internal_response=completions
+            content=[
+                LLMChatResponseContent(content=candidate.content, type="text")
+                for candidate in completions.candidates
+            ],
+            internal_response=completions,
         )
