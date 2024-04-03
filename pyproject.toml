@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "LLMSmith"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Dheeraj Gopinath <dheeraj.gopinath@gmail.com>"]
 readme = "README.md"
@@ -10,7 +10,7 @@ python = "^3.9"
 openai = {version = "^1.13.3", optional = true}
 anthropic = {version = "^0.19.2", optional = true}
 google-generativeai = {version = "^0.4.0", optional = true}
-chromadb-client = {version = "^0.4.24", optional = true}
+chromadb-client = {version = "^0.4.25.dev0", optional = true}
 onnxruntime = {version = "^1.17.1", optional = true}
 
 [tool.poetry.extras]
