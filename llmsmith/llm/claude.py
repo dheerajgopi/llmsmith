@@ -9,7 +9,7 @@ try:
     from anthropic._types import NOT_GIVEN
 except ImportError:
     raise ImportError(
-        "The 'anthropic' library is required to use Claude. You can install it with `pip install llmsmith[claude]`"
+        "The 'anthropic' library is required to use Claude. You can install it with `pip install \"llmsmith[claude]\"`"
     )
 
 

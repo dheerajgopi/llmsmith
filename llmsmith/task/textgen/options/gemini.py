@@ -6,7 +6,7 @@ try:
     from google.generativeai.types.content_types import FunctionLibraryType
 except ImportError:
     raise ImportError(
-        "The 'google.generativeai' library is required to use GeminiTextGenOptions. You can install it with `pip install llmsmith[gemini]`"
+        "The 'google.generativeai' library is required to use GeminiTextGenOptions. You can install it with `pip install \"llmsmith[gemini]\"`"
     )
 
 

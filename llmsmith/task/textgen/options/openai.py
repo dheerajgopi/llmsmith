@@ -12,7 +12,7 @@ try:
     from openai.types.chat.chat_completion_tool_param import ChatCompletionToolParam
 except ImportError:
     raise ImportError(
-        "The 'openai' library is required to use OpenAITextGenOptions. You can install it with `pip install llmsmith[openai]`"
+        "The 'openai' library is required to use OpenAITextGenOptions. You can install it with `pip install \"llmsmith[openai]\"`"
     )
 
 

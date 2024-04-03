@@ -8,7 +8,7 @@ try:
     from openai.types.chat.chat_completion import ChatCompletion
 except ImportError:
     raise ImportError(
-        "The 'openai' library is required to use OpenAI. You can install it with `pip install llmsmith[openai]`"
+        "The 'openai' library is required to use OpenAI. You can install it with `pip install \"llmsmith[openai]\"`"
     )
 
 

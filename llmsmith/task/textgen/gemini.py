@@ -6,7 +6,7 @@ try:
     from google.generativeai.types import GenerateContentResponse
 except ImportError:
     raise ImportError(
-        "The 'google.generativeai' library is required to use GeminiTextGenTask. You can install it with `pip install llmsmith[gemini]`"
+        "The 'google.generativeai' library is required to use GeminiTextGenTask. You can install it with `pip install \"llmsmith[gemini]\"`"
     )
 
 from llmsmith.task.base import Task

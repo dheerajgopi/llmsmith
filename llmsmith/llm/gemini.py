@@ -7,7 +7,7 @@ try:
     import google.generativeai as genai
 except ImportError:
     raise ImportError(
-        "The 'google.generativeai' library is required to use Gemini. You can install it with `pip install llmsmith[gemini]`"
+        "The 'google.generativeai' library is required to use Gemini. You can install it with `pip install \"llmsmith[gemini]\"`"
     )
 
 

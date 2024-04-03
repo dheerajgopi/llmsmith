@@ -7,7 +7,7 @@ For example, if your project is using an OpenAI LLM and Chroma DB vector databas
 
 .. code-block:: console
 
-    pip install llmsmith[openai,chromadb]
+    pip install "llmsmith[openai,chromadb]"
 
 The above command ensures that only the required dependencies (openai and chromadb clients in this case) are downloaded. The rest are ignored, thus reducing the package size.
 
