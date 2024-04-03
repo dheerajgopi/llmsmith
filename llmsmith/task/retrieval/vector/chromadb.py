@@ -15,7 +15,8 @@ except ImportError:
 def default_doc_processor(res: QueryResult) -> str:
     """
     Formats the retrieved chromadb documents into below format.
-    ```
+
+    ``
     [0] document-0-content
 
     [1] document-1-content
@@ -23,7 +24,7 @@ def default_doc_processor(res: QueryResult) -> str:
     ...
 
     [n] document-n-content
-    ```
+    ``
     """
 
     processed_docs = []

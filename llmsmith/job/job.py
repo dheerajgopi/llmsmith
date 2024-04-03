@@ -15,16 +15,18 @@ class SequentialJob(Job):
     An implementation of :class:`llmsmith.job.base.Job` which executes the given tasks sequentially.
     When adding a task, it is possible to pass the input/output values of previous tasks via an input template with placeholders.
     The placeholders can be in the following formats:
-    - For replacing with the input value of a previous task: {{task-name.input}}
-    - For replacing with the output value of a previous task: {{task-name.output}}
-    - For replacing with the initial user input which is passed to the job while running it: {{root}}
+
+    * For replacing with the input value of a previous task: {{task-name.input}}
+    * For replacing with the output value of a previous task: {{task-name.output}}
+    * For replacing with the initial user input which is passed to the job while running it: {{root}}
 
     A simple RAG implementation can be used as an example here for showcasing the above points.
 
     Consider the below flow:
-    - An user query is passed as input to a retriever (chromaDB)
-    - Retriever output is passed to an LLM (OpenAI) to rephrase the query
-    - Rephrased query is used as input to an LLM (OpenAI) to get the answer
+
+    * An user query is passed as input to a retriever (chromaDB)
+    * Retriever output is passed to an LLM (OpenAI) to rephrase the query
+    * Rephrased query is used as input to an LLM (OpenAI) to get the answer
 
     Following is the code for the above flow using llmsmith.
 
@@ -138,8 +140,9 @@ class ConcurrentJob(Job):
     Every task added to an instance of `ConcurrentJob` will share the same input, which is the initial user input passed to the job.
 
     Consider the below tasks for example:
-    - Write a crime thriller movie idea based on the information given by the user.
-    - Write a horror movie idea based on the information given by the user.
+
+    * Write a crime thriller movie idea based on the information given by the user.
+    * Write a horror movie idea based on the information given by the user.
 
     Since both tasks are based on the same input provided by the user, we can do it concurrently.
 

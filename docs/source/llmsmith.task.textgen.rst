@@ -1,0 +1,45 @@
+llmsmith.task.textgen package
+=============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   llmsmith.task.textgen.options
+
+Submodules
+----------
+
+llmsmith.task.textgen.claude module
+-----------------------------------
+
+.. automodule:: llmsmith.task.textgen.claude
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+llmsmith.task.textgen.gemini module
+-----------------------------------
+
+.. automodule:: llmsmith.task.textgen.gemini
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+llmsmith.task.textgen.openai module
+-----------------------------------
+
+.. automodule:: llmsmith.task.textgen.openai
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: llmsmith.task.textgen
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -21,8 +21,9 @@ class OpenAITextGenOptions(TypedDict):
     A dictionary of options to pass to the OpenAI LLM for text generation.
     The option names are same as the ones used in OpenAI client (except `system_prompt`, which is an extra).
     Refer below links for more info.
-    - https://github.com/openai/openai-python/blob/v1.13.3/src/openai/types/chat/completion_create_params.py
-    - https://platform.openai.com/docs/api-reference/chat/create
+
+    * https://github.com/openai/openai-python/blob/v1.13.3/src/openai/types/chat/completion_create_params.py
+    * https://platform.openai.com/docs/api-reference/chat/create
     """
 
     model: str

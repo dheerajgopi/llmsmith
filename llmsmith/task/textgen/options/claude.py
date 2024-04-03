@@ -13,8 +13,9 @@ class ClaudeTextGenOptions(TypedDict):
     A dictionary of options to pass to the Anthropic Claude LLM for text generation.
     The option names are same as the ones used in Anthropic client.
     Refer below links for more info.
-    - https://github.com/anthropics/anthropic-sdk-python/blob/v0.19.2/src/anthropic/types/message_create_params.py
-    - https://docs.anthropic.com/claude/reference/messages_post
+    
+    * https://github.com/anthropics/anthropic-sdk-python/blob/v0.19.2/src/anthropic/types/message_create_params.py
+    * https://docs.anthropic.com/claude/reference/messages_post
     """
 
     model: str
