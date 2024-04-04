@@ -1,6 +1,8 @@
 import logging
 from typing import List
 
+from llmsmith.task.textgen.errors import PromptBlockedError, TextGenFailedError
+
 try:
     from google.generativeai import GenerativeModel
     from google.generativeai.types import GenerateContentResponse
@@ -54,6 +56,8 @@ class GeminiTextGenTask(Task[str, str]):
         :param task_input: The input to the task.
         :type task_input: :class:`llmsmith.task.models.TaskInput[str]`
         :raises ValueError: If the content of the task input is not a string.
+        :raises PromptBlockedError: If the prompt is blocked by the AI.
+        :raises TextGenFailedError: If AI fails to generate text based on the prompt.
         :returns: The output of the task.
         :rtype: :class:`llmsmith.task.models.TaskOutput[str]`
         """
@@ -76,10 +80,45 @@ class GeminiTextGenTask(Task[str, str]):
             contents=messages_payload, **chat_completion_options
         )
 
-        log.debug(f"Google Gemini chat response: {llm_reply}")
+        log.info(f"Google Gemini chat response: {llm_reply}")
 
-        output_content: str = llm_reply.candidates[0].content
+        if (
+            llm_reply.prompt_feedback.block_reason
+            and llm_reply.prompt_feedback.block_reason
+            != llm_reply.prompt_feedback.BlockReason.BLOCK_REASON_UNSPECIFIED
+        ):
+            raise PromptBlockedError(
+                "Prompt blocked by the AI",
+                block_reason=GeminiTextGenTask._block_reason_str(llm_reply),
+            )
+
+        output_candidate = next(
+            (c for c in llm_reply.candidates if c.finish_reason == c.FinishReason.STOP),
+            None,
+        )
+        if not output_candidate:
+            raise TextGenFailedError(
+                "Failed to generate text", failure_reason="NO_NATURAL_STOP_POINT"
+            )
+
+        output_content: str = next(
+            (p.text for p in output_candidate.content.parts if p.text), None
+        )
+        if not output_content:
+            raise TextGenFailedError(
+                "Failed to generate text", failure_reason="NO_TEXT_DATA"
+            )
 
         log.debug(f"task_output value: {output_content}")
 
         return TaskOutput(content=output_content, raw_output=llm_reply)
+
+    @classmethod
+    def _block_reason_str(llm_reply: GenerateContentResponse) -> str:
+        if (
+            llm_reply.prompt_feedback.block_reason
+            == llm_reply.prompt_feedback.BlockReason.SAFETY
+        ):
+            return "SAFETY_CHECK_FAILED"
+
+        return "OTHER"

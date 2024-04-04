@@ -13,7 +13,7 @@ class ClaudeTextGenOptions(TypedDict):
     A dictionary of options to pass to the Anthropic Claude LLM for text generation.
     The option names are same as the ones used in Anthropic client.
     Refer below links for more info.
-    
+
     * https://github.com/anthropics/anthropic-sdk-python/blob/v0.19.2/src/anthropic/types/message_create_params.py
     * https://docs.anthropic.com/claude/reference/messages_post
     """
@@ -33,4 +33,14 @@ class ClaudeTextGenOptions(TypedDict):
 
 
 def _completion_create_options_dict(options: ClaudeTextGenOptions) -> dict:
-    return {attr: options.get(attr) for attr in ClaudeTextGenOptions.__annotations__}
+    opt = {
+        attr: options.get(attr)
+        for attr in ClaudeTextGenOptions.__annotations__
+        if options.get(attr)
+    }
+    if not opt.get("model"):
+        opt["model"] = "claude-3-opus-20240229"
+    if not opt.get("max_tokens"):
+        opt["max_tokens"] = 1024
+
+    return opt

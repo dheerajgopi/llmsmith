@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 # Default options for text generation using Anthropic's Claude LLMs.
 default_options: ClaudeTextGenOptions = ClaudeTextGenOptions(
-    model="claude-instant-1.2", temperature=0.3
+    model="claude-3-opus-20240229", temperature=0.3, max_tokens=1024
 )
 
 
