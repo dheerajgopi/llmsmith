@@ -1,5 +1,5 @@
-llmsmith
-========
+Modules
+=======
 
 .. toctree::
    :maxdepth: 4
