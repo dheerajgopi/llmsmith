@@ -48,14 +48,13 @@ and now, lets check the code for the RAG function.
         # llm = openai.AsyncOpenAI(api_key="sk-api-key", base_url="http://localhost:11434/v1/")
 
         # Create a client for the Chroma DB collection (`test_collection`)
-        collection: chromadb.Collection = chroma_client.get_collection(
-            name="test_collection", embedding_function=embedding_functions.ONNXMiniLM_L6_V2()
-        )
+        collection: chromadb.Collection = chroma_client.get_collection(name="test_collection")
 
-        # define the retriever task
+        # define the retriever task along with the embedding function
         retrieval_task: ChromaDBRetriever = ChromaDBRetriever(
             name="chromadb-retriever",
             collection=collection,
+            embedding_func=lambda x: embedding_functions.ONNXMiniLM_L6_V2().embed_with_retries(x),
         )
 
         # define the LLM task for answering the query

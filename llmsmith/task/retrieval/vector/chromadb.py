@@ -2,6 +2,7 @@ from typing import Callable
 
 from llmsmith.task.base import Task
 from llmsmith.task.models import TaskInput, TaskOutput
+from llmsmith.task.retrieval.vector.base import EmbeddingFunc
 
 
 try:
@@ -42,6 +43,8 @@ class ChromaDBRetriever(Task[str, str]):
     :type name: str
     :param collection: The collection to retrieve documents from.
     :type collection: :class:`chromadb.Collection`
+    :param embedding_func: Embedding function
+    :type embedding_func: :class:`llmsmith.task.retrieval.vector.base.EmbeddingFunc`
     :param docs_to_retrieve: The number of documents to retrieve, defaults to 5.
     :type docs_to_retrieve: int, optional
     :param where: Filters to be applied on the `metadata` field, defaults to None.
@@ -56,6 +59,7 @@ class ChromaDBRetriever(Task[str, str]):
         self,
         name: str,
         collection: Collection,
+        embedding_func: EmbeddingFunc,
         docs_to_retrieve: int = 5,
         where: Where = None,
         where_doc: WhereDocument = None,
@@ -63,7 +67,11 @@ class ChromaDBRetriever(Task[str, str]):
     ) -> None:
         super().__init__(name)
 
+        if not embedding_func:
+            raise ValueError("Embedding function ('embedding_func') is required")
+
         self.collection = collection
+        self.embedding_func = embedding_func
         self.docs_to_retrieve = docs_to_retrieve
         self.where = where
         self.where_doc = where_doc
@@ -78,8 +86,10 @@ class ChromaDBRetriever(Task[str, str]):
         :return: The output of the task, which includes the processed result and the raw output from chromadb.
         :rtype: :class:`llmsmith.task.models.TaskOutput[str]`
         """
+        embeddings = self.embedding_func([task_input.content])
+
         res: QueryResult = self.collection.query(
-            query_texts=[task_input.content],
+            query_embeddings=embeddings,
             n_results=self.docs_to_retrieve,
             include=["metadatas", "documents", "distances"],
             where=self.where,
