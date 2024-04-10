@@ -1,16 +1,27 @@
+import logging
 from typing import Callable
 
 from llmsmith.task.base import Task
 from llmsmith.task.models import TaskInput, TaskOutput
 from llmsmith.task.retrieval.vector.base import EmbeddingFunc
+from llmsmith.task.retrieval.vector.options.chromadb import (
+    ChromaDBQueryOptions,
+    _query_options_dict,
+)
 
 
 try:
-    from chromadb import Collection, QueryResult, Where, WhereDocument
+    from chromadb import Collection, QueryResult
 except ImportError:
     raise ImportError(
         "The 'chromadb-client' library is required to use ChromaDBRetriever. You can install it with `pip install \"llmsmith[chromadb]\"`"
     )
+
+
+log = logging.getLogger(__name__)
+
+# Default options for querying a Qdrant collection.
+default_options: ChromaDBQueryOptions = ChromaDBQueryOptions(n_results=10)
 
 
 def default_doc_processor(res: QueryResult) -> str:
@@ -45,14 +56,10 @@ class ChromaDBRetriever(Task[str, str]):
     :type collection: :class:`chromadb.Collection`
     :param embedding_func: Embedding function
     :type embedding_func: :class:`llmsmith.task.retrieval.vector.base.EmbeddingFunc`
-    :param docs_to_retrieve: The number of documents to retrieve, defaults to 5.
-    :type docs_to_retrieve: int, optional
-    :param where: Filters to be applied on the `metadata` field, defaults to None.
-    :type where: :class:`chromadb.Where`, optional
-    :param where_doc: Filters to be applied on the document itself, defaults to None.
-    :type where_doc: :class:`chromadb.WhereDocument`, optional
     :param doc_processing_func: The function to process the query result, defaults to `llmsmith.task.retrieval.vector.chromadb.default_doc_processor`.
     :type doc_processing_func: Callable[[QueryResult], str], optional
+    :param query_options: A dictionary of options to pass to the ChromaDB collection client for querying.
+    :type query_options: :class:`llmsmith.task.retrieval.vector.options.chromadb.ChromaDBQueryOptions`, optional
     """
 
     def __init__(
@@ -60,10 +67,8 @@ class ChromaDBRetriever(Task[str, str]):
         name: str,
         collection: Collection,
         embedding_func: EmbeddingFunc,
-        docs_to_retrieve: int = 5,
-        where: Where = None,
-        where_doc: WhereDocument = None,
         doc_processing_func: Callable[[QueryResult], str] = default_doc_processor,
+        query_options: ChromaDBQueryOptions = default_options,
     ) -> None:
         super().__init__(name)
 
@@ -72,10 +77,8 @@ class ChromaDBRetriever(Task[str, str]):
 
         self.collection = collection
         self.embedding_func = embedding_func
-        self.docs_to_retrieve = docs_to_retrieve
-        self.where = where
-        self.where_doc = where_doc
         self.doc_processing_func = doc_processing_func
+        self.query_options = query_options
 
     async def execute(self, task_input: TaskInput[str]) -> TaskOutput[str]:
         """
@@ -86,14 +89,18 @@ class ChromaDBRetriever(Task[str, str]):
         :return: The output of the task, which includes the processed result and the raw output from chromadb.
         :rtype: :class:`llmsmith.task.models.TaskOutput[str]`
         """
+        query_options: dict = _query_options_dict(self.query_options)
+
+        log.debug(
+            f"ChromaDB query request: input string: {task_input.content}\n OPTIONS: {query_options}"
+        )
+
         embeddings = self.embedding_func([task_input.content])
 
         res: QueryResult = self.collection.query(
             query_embeddings=embeddings,
-            n_results=self.docs_to_retrieve,
             include=["metadatas", "documents", "distances"],
-            where=self.where,
-            where_document=self.where_doc,
+            **query_options,
         )
 
         processed_res: str = self.doc_processing_func(res)
