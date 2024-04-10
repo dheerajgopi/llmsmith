@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 4
 
    llmsmith.job
-   llmsmith.llm
    llmsmith.task
 
 Module contents
