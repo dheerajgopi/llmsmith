@@ -23,3 +23,11 @@ Here's the list of extra dependencies supported by LLMSmith:
 - `chromadb`
 - `qdrant`
 - `all` (downloads all extra dependencies)
+
+## Example
+
+Refer [this](https://llmsmith.readthedocs.io/en/latest/examples.html) page from the documentation to see how a naive RAG functionality can be created using LLMSmith.
+
+## Documentation
+
+An extensive documentation for LLMSmith is hosted in Read the Docs here - [https://llmsmith.readthedocs.io/en/latest](https://llmsmith.readthedocs.io/en/latest)
