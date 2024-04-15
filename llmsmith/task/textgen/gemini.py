@@ -114,7 +114,7 @@ class GeminiTextGenTask(Task[str, str]):
         return TaskOutput(content=output_content, raw_output=llm_reply)
 
     @classmethod
-    def _block_reason_str(llm_reply: GenerateContentResponse) -> str:
+    def _block_reason_str(cls, llm_reply: GenerateContentResponse) -> str:
         if (
             llm_reply.prompt_feedback.block_reason
             == llm_reply.prompt_feedback.BlockReason.SAFETY

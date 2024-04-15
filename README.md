@@ -21,4 +21,5 @@ Here's the list of extra dependencies supported by LLMSmith:
 - `claude`
 - `gemini`
 - `chromadb`
+- `qdrant`
 - `all` (downloads all extra dependencies)

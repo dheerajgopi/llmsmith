@@ -102,7 +102,7 @@ class QdrantRetriever(Task[str, str]):
 
         :param task_input: The input for the task.
         :type task_input: :class:`llmsmith.task.models.TaskInput[str]`
-        :return: The output of the task, which includes the processed result and the raw output from chromadb.
+        :return: The output of the task, which includes the processed result and the raw output from Qdrant.
         :rtype: :class:`llmsmith.task.models.TaskOutput[str]`
         """
 
