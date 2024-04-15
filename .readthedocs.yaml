@@ -12,6 +12,8 @@ build:
     python: "3.9"
   jobs:
     post_create_environment:
+      # Install sphinx_rtd_theme manually
+      - python -m pip install sphinx_rtd_theme
       # Install poetry
       - pip install poetry
       # Tell poetry to not use a virtual environment
