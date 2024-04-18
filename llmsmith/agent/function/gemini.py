@@ -107,13 +107,17 @@ class GeminiFunctionAgent(Task[str, str]):
 
             # Exit condition: If no function calls are required.
             if not func_calls:
-                log.debug(f"GeminiFunctionAgent turn-{turn+1} | Exiting agent loop with text output: f{chat_response.text}")
+                log.debug(
+                    f"GeminiFunctionAgent turn-{turn+1} | Exiting agent loop with text output: f{chat_response.text}"
+                )
                 return TaskOutput(
                     content=chat_response.text,
                     raw_output=chat_response.raw_output,
                 )
-            
-            log.debug(f"GeminiFunctionAgent turn-{turn+1} | Function call required: {func_calls}")
+
+            log.debug(
+                f"GeminiFunctionAgent turn-{turn+1} | Function call required: {func_calls}"
+            )
 
             for func_name, args in func_calls.items():
                 func_output = self._tool_callables[func_name](**args)
