@@ -11,7 +11,7 @@ from google.ai.generativelanguage_v1beta.types import Content, Part
 import pytest
 
 from llmsmith.task.models import TaskInput
-from llmsmith.task.textgen.errors import PromptBlockedError, TextGenFailedError
+from llmsmith.task.textgen.errors import PromptBlockedException, TextGenFailedException
 from llmsmith.task.textgen.gemini import GeminiTextGenTask
 from llmsmith.task.textgen.options.gemini import GeminiTextGenOptions
 
@@ -74,7 +74,7 @@ class GeminiTextGenTaskTest(unittest.IsolatedAsyncioTestCase):
             llm=mock_client,
         )
 
-        with pytest.raises(PromptBlockedError):
+        with pytest.raises(PromptBlockedException):
             await text_gen_task.execute(TaskInput("query"))
 
         mock_client.generate_content_async.assert_called_with(
@@ -127,7 +127,7 @@ class GeminiTextGenTaskTest(unittest.IsolatedAsyncioTestCase):
             llm=mock_client,
         )
 
-        with pytest.raises(TextGenFailedError) as err:
+        with pytest.raises(TextGenFailedException) as err:
             await text_gen_task.execute(TaskInput("query"))
 
         assert err.value.failure_reason == "NO_NATURAL_STOP_POINT"
@@ -183,7 +183,7 @@ class GeminiTextGenTaskTest(unittest.IsolatedAsyncioTestCase):
             llm=mock_client,
         )
 
-        with pytest.raises(TextGenFailedError) as err:
+        with pytest.raises(TextGenFailedException) as err:
             await text_gen_task.execute(TaskInput("query"))
 
         assert err.value.failure_reason == "NO_TEXT_DATA"

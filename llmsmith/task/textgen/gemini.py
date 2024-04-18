@@ -1,7 +1,7 @@
 import logging
 from typing import List, Union
 
-from llmsmith.task.textgen.errors import PromptBlockedError, TextGenFailedError
+from llmsmith.task.textgen.errors import PromptBlockedException, TextGenFailedException
 
 try:
     from google.ai.generativelanguage_v1beta.types.content import FunctionCall
@@ -84,7 +84,7 @@ class BaseGeminiChat:
             and llm_reply.prompt_feedback.block_reason
             != llm_reply.prompt_feedback.BlockReason.BLOCK_REASON_UNSPECIFIED
         ):
-            raise PromptBlockedError(
+            raise PromptBlockedException(
                 "Prompt blocked by the AI",
                 block_reason=BaseGeminiChat._block_reason_str(llm_reply),
             )
@@ -94,7 +94,7 @@ class BaseGeminiChat:
             None,
         )
         if not output_candidate:
-            raise TextGenFailedError(
+            raise TextGenFailedException(
                 "Failed to generate text", failure_reason="NO_NATURAL_STOP_POINT"
             )
 
@@ -124,7 +124,7 @@ class BaseGeminiChat:
             (p.text for p in output_candidate.content.parts if p.text), None
         )
         if not output_content:
-            raise TextGenFailedError(
+            raise TextGenFailedException(
                 "Failed to generate text", failure_reason="NO_TEXT_DATA"
             )
 

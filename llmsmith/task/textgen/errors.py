@@ -1,8 +1,8 @@
-class TextGenError(Exception):
-    """Base error for all text generation errors"""
+class TextGenException(Exception):
+    """Base exception for all text generation related errors"""
 
 
-class TextGenFailedError(TextGenError):
+class TextGenFailedException(TextGenException):
     """Raised when the AI fails to generate text for some reason (like unsafe prompt, exceeded token count etc.)"""
 
     def __init__(self, *args, **kwargs):
@@ -10,7 +10,7 @@ class TextGenFailedError(TextGenError):
         self.failure_reason = kwargs.get("failure_reason")
 
 
-class PromptBlockedError(TextGenError):
+class PromptBlockedException(TextGenException):
     """Raised when the prompt is blocked by the AI for some reason (like blocked prompt for example)"""
 
     def __init__(self, *args, **kwargs):
