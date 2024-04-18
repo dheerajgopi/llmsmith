@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   llmsmith.agent
    llmsmith.job
    llmsmith.task
 
