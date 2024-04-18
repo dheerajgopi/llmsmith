@@ -35,5 +35,5 @@ html_theme_options = {
     "display_version": True,
     # Toc options
     "collapse_navigation": False,
-    "navigation_depth": 4
+    "navigation_depth": 4,
 }

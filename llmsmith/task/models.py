@@ -14,3 +14,10 @@ class TaskInput(Generic[T]):
 class TaskOutput(Generic[T]):
     content: T
     raw_output: Any
+
+
+@dataclass
+class ChatResponse:
+    text: str
+    raw_output: Any
+    function_calls: dict[str, dict[str, Any]] = None

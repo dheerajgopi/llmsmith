@@ -3,7 +3,6 @@ from typing import Any, TypedDict, Union
 try:
     from google.generativeai.types.generation_types import GenerationConfigType
     from google.generativeai.types.safety_types import SafetySettingOptions
-    from google.generativeai.types.content_types import FunctionLibraryType
 except ImportError:
     raise ImportError(
         "The 'google.generativeai' library is required to use GeminiTextGenOptions. You can install it with `pip install \"llmsmith[gemini]\"`"
@@ -24,7 +23,6 @@ class GeminiTextGenOptions(TypedDict):
 
     generation_config: Union[GenerationConfigType, None]
     safety_settings: Union[SafetySettingOptions, None]
-    tools: Union[FunctionLibraryType, None]
     request_options: Union[dict[str, Any], None]
 
 
