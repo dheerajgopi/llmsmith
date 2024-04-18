@@ -98,7 +98,7 @@ class GeminiFunctionAgent(Task[str, str]):
         llm_input_content: str = task_input.content
         messages_payload: List[dict] = [{"role": "user", "parts": [llm_input_content]}]
 
-        for _ in range(self.max_turns):
+        for turn in range(self.max_turns):
             chat_response = await self._chat.chat(
                 messages_payload=messages_payload, tools=self.llm_tools
             )
@@ -107,10 +107,13 @@ class GeminiFunctionAgent(Task[str, str]):
 
             # Exit condition: If no function calls are required.
             if not func_calls:
+                log.debug(f"GeminiFunctionAgent turn-{turn+1} | Exiting agent loop with text output: f{chat_response.text}")
                 return TaskOutput(
                     content=chat_response.text,
                     raw_output=chat_response.raw_output,
                 )
+            
+            log.debug(f"GeminiFunctionAgent turn-{turn+1} | Function call required: {func_calls}")
 
             for func_name, args in func_calls.items():
                 func_output = self._tool_callables[func_name](**args)
