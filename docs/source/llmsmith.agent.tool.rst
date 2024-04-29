@@ -12,6 +12,14 @@ llmsmith.agent.tool.gemini module
    :undoc-members:
    :show-inheritance:
 
+llmsmith.agent.tool.openai module
+---------------------------------
+
+.. automodule:: llmsmith.agent.tool.openai
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

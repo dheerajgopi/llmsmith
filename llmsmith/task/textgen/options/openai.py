@@ -1,15 +1,10 @@
-from typing import Dict, Iterable, List, TypedDict, Union
+from typing import Dict, List, TypedDict, Union
 
 try:
-    from openai.types.chat.completion_create_params import (
-        FunctionCall,
-        Function,
-        ResponseFormat,
-    )
+    from openai.types.chat.completion_create_params import ResponseFormat
     from openai.types.chat.chat_completion_tool_choice_option_param import (
         ChatCompletionToolChoiceOptionParam,
     )
-    from openai.types.chat.chat_completion_tool_param import ChatCompletionToolParam
 except ImportError:
     raise ImportError(
         "The 'openai' library is required to use OpenAITextGenOptions. You can install it with `pip install \"llmsmith[openai]\"`"
@@ -30,8 +25,6 @@ class OpenAITextGenOptions(TypedDict):
     # System prompt to be set in the chat creation request.
     system_prompt: Union[str, None]
     frequency_penalty: Union[float, None]
-    function_call: Union[FunctionCall, None]
-    functions: Union[Iterable[Function], None]
     logit_bias: Union[Dict[str, int], None]
     logprobs: Union[bool, None]
     max_tokens: Union[int, None]
@@ -41,7 +34,6 @@ class OpenAITextGenOptions(TypedDict):
     stop: Union[str, List[str], None]
     temperature: Union[float, None]
     tool_choice: Union[ChatCompletionToolChoiceOptionParam, None]
-    tools: Union[Iterable[ChatCompletionToolParam], None]
     top_logprobs: Union[int, None]
     top_p: Union[float, None]
     user: Union[str, None]
@@ -50,8 +42,13 @@ class OpenAITextGenOptions(TypedDict):
 
 
 def _completion_create_options_dict(options: OpenAITextGenOptions) -> dict:
-    return {
+    opt = {
         attr: options.get(attr)
         for attr in OpenAITextGenOptions.__annotations__
         if attr not in ["system_prompt"]
     }
+
+    if not opt.get("model"):
+        opt["model"] = "gpt-3.5-turbo"
+
+    return opt

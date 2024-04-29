@@ -18,6 +18,7 @@ except ImportError:
 
 from llmsmith.task.base import Task
 from llmsmith.task.models import ChatResponse, TaskInput, TaskOutput
+from llmsmith.task.models import FunctionCall as LLMFunctionCall
 from llmsmith.task.textgen.options.gemini import (
     GeminiTextGenOptions,
     _completion_create_options_dict,
@@ -112,11 +113,12 @@ class BaseGeminiChat:
                 text=None,
                 raw_output=llm_reply,
                 function_calls={
-                    function_call.name: {
-                        prop: val for prop, val in function_call.args.items()
-                    }
-                    if function_call.args
-                    else {}
+                    function_call.name: LLMFunctionCall(
+                        id=None,
+                        args={prop: val for prop, val in function_call.args.items()}
+                        if function_call.args
+                        else {},
+                    )
                 },
             )
 
@@ -128,7 +130,7 @@ class BaseGeminiChat:
                 "Failed to generate text", failure_reason="NO_TEXT_DATA"
             )
 
-        log.debug(f"task_output value: {output_content}")
+        log.debug(f"chat response output value: {output_content}")
 
         return ChatResponse(text=output_content, raw_output=llm_reply)
 

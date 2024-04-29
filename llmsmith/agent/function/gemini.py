@@ -119,13 +119,17 @@ class GeminiFunctionAgent(Task[str, str]):
                 f"GeminiFunctionAgent turn-{turn+1} | Function call required: {func_calls}"
             )
 
-            for func_name, args in func_calls.items():
-                func_output = self._tool_callables[func_name](**args)
+            for func_name, func in func_calls.items():
+                func_output = self._tool_callables[func_name](**func.args)
                 messages_payload.append(
                     {
                         "role": "function",
                         "parts": [
-                            Part(function_call=FunctionCall(name=func_name, args=args))
+                            Part(
+                                function_call=FunctionCall(
+                                    name=func_name, args=func.args
+                                )
+                            )
                         ],
                     }
                 )

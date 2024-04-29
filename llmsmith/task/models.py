@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, Union
 
 
 T = TypeVar("T")
@@ -17,7 +17,13 @@ class TaskOutput(Generic[T]):
 
 
 @dataclass
+class FunctionCall:
+    id: Union[str, None]
+    args: dict[str, Any]
+
+
+@dataclass
 class ChatResponse:
     text: str
     raw_output: Any
-    function_calls: dict[str, dict[str, Any]] = None
+    function_calls: dict[str, FunctionCall] = None
