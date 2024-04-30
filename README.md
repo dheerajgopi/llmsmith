@@ -26,7 +26,7 @@ Here's the list of extra dependencies supported by LLMSmith:
 
 ## Example
 
-Refer [this](https://llmsmith.readthedocs.io/en/latest/examples.html) page from the documentation to see how a naive RAG functionality can be created using LLMSmith.
+Refer [this](https://llmsmith.readthedocs.io/en/latest/examples.html) page from the documentation to see examples on how LLMSmith can be used to build LLM powered functionalities.
 
 ## Documentation
 
