@@ -172,6 +172,10 @@ class OpenAIFunctionAgent(Task[str, str]):
             if run.status == "requires_action":
                 func_tool_outputs = []
 
+                log.debug(
+                    f"OpenAIFunctionAgent turn-{turn+1} | Function call required: {run.required_action.submit_tool_outputs.tool_calls}"
+                )
+
                 for tool in run.required_action.submit_tool_outputs.tool_calls:
                     args = (
                         json.loads(tool.function.arguments)
