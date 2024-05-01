@@ -1,9 +1,10 @@
 import logging
-from typing import Callable
+from typing import Callable, List
 
+from llmsmith.reranker.base import Reranker
 from llmsmith.task.base import Task
 from llmsmith.task.models import TaskInput, TaskOutput
-from llmsmith.task.retrieval.vector.base import EmbeddingFunc
+from llmsmith.task.retrieval.vector.base import EmbeddingFunc, default_doc_processor
 from llmsmith.task.retrieval.vector.options.chromadb import (
     ChromaDBQueryOptions,
     _query_options_dict,
@@ -24,28 +25,6 @@ log = logging.getLogger(__name__)
 default_options: ChromaDBQueryOptions = ChromaDBQueryOptions(n_results=10)
 
 
-def default_doc_processor(res: QueryResult) -> str:
-    """
-    Formats the retrieved chromadb documents into below format.
-
-    ``
-    [0] document-0-content
-
-    [1] document-1-content
-
-    ...
-
-    [n] document-n-content
-    ``
-    """
-
-    processed_docs = []
-    for idx, doc in enumerate(res["documents"][0]):
-        processed_docs.append(f"[{idx}] {doc}")
-
-    return "\n\n".join(processed_docs)
-
-
 class ChromaDBRetriever(Task[str, str]):
     """
     Task for retrieving documents from a collection in ChromaDB.
@@ -56,10 +35,12 @@ class ChromaDBRetriever(Task[str, str]):
     :type collection: :class:`chromadb.Collection`
     :param embedding_func: Embedding function
     :type embedding_func: :class:`llmsmith.task.retrieval.vector.base.EmbeddingFunc`
-    :param doc_processing_func: The function to process the query result, defaults to `llmsmith.task.retrieval.vector.chromadb.default_doc_processor`.
-    :type doc_processing_func: Callable[[QueryResult], str], optional
+    :param doc_processing_func: The function to process the query result, defaults to `llmsmith.task.retrieval.vector.base.default_doc_processor`.
+    :type doc_processing_func: Callable[[List[str]], str], optional
     :param query_options: A dictionary of options to pass to the ChromaDB collection client for querying.
     :type query_options: :class:`llmsmith.task.retrieval.vector.options.chromadb.ChromaDBQueryOptions`, optional
+    :param reranker: Rerank the documents based on the query used to retrieve the documents.
+    :type reranker: :class:`llmsmith.reranker.base.Reranker`, optional
     """
 
     def __init__(
@@ -67,8 +48,9 @@ class ChromaDBRetriever(Task[str, str]):
         name: str,
         collection: Collection,
         embedding_func: EmbeddingFunc,
-        doc_processing_func: Callable[[QueryResult], str] = default_doc_processor,
+        doc_processing_func: Callable[[List[str]], str] = default_doc_processor,
         query_options: ChromaDBQueryOptions = default_options,
+        reranker: Reranker = None,
     ) -> None:
         super().__init__(name)
 
@@ -79,6 +61,7 @@ class ChromaDBRetriever(Task[str, str]):
         self.embedding_func = embedding_func
         self.doc_processing_func = doc_processing_func
         self.query_options = query_options
+        self._reranker = reranker
 
     async def execute(self, task_input: TaskInput[str]) -> TaskOutput[str]:
         """
@@ -103,5 +86,9 @@ class ChromaDBRetriever(Task[str, str]):
             **query_options,
         )
 
-        processed_res: str = self.doc_processing_func(res)
+        docs = [doc for doc in res["documents"][0]]
+        if self._reranker:
+            docs = await self._reranker.rerank(query=task_input.content, docs=docs)
+
+        processed_res: str = self.doc_processing_func(docs)
         return TaskOutput(content=processed_res, raw_output=res)

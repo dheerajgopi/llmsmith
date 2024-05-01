@@ -23,6 +23,7 @@ protobuf = {version = "3.20.3", optional = true}
 tokenizers = {version = "^0.19.1", optional = true}
 python-dotenv = "^1.0.1"
 qdrant-client = {version = "^1.8.2", optional = true}
+cohere = {version = "^5.3.4", optional = true}
 
 [tool.poetry.extras]
 openai = ["openai"]
@@ -30,7 +31,8 @@ claude = ["anthropic"]
 gemini = ["google-generativeai"]
 chromadb = ["chromadb-client", "onnxruntime", "protobuf", "tokenizers"]
 qdrant = ["qdrant-client"]
-all = ["openai", "anthropic", "google-generativeai", "chromadb-client", "onnxruntime", "protobuf", "tokenizers", "qdrant-client"]
+cohere = ["cohere"]
+all = ["openai", "anthropic", "google-generativeai", "chromadb-client", "onnxruntime", "protobuf", "tokenizers", "qdrant-client", "cohere"]
 
 [tool.poetry.group.dev]
 optional = true
