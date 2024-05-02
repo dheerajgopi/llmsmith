@@ -9,6 +9,7 @@ Subpackages
 
    llmsmith.agent
    llmsmith.job
+   llmsmith.reranker
    llmsmith.task
 
 Module contents
