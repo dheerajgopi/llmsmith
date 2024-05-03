@@ -13,12 +13,10 @@ The above command ensures that only the required dependencies (openai and chroma
 
 Here's the list of extra dependencies supported by LLMSmith:
 
-- `openai`
-
-- `claude`
-
-- `gemini`
-
-- `chromadb`
-
-- `all` (downloads all extra dependencies)
+* `openai`
+* `claude`
+* `gemini`
+* `chromadb`
+* `qdrant`
+* `cohere`
+* `all` (downloads all extra dependencies)
