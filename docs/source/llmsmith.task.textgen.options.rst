@@ -12,6 +12,14 @@ llmsmith.task.textgen.options.claude module
    :undoc-members:
    :show-inheritance:
 
+llmsmith.task.textgen.options.cohere module
+-------------------------------------------
+
+.. automodule:: llmsmith.task.textgen.options.cohere
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.task.textgen.options.gemini module
 -------------------------------------------
 

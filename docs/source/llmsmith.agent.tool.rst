@@ -4,6 +4,14 @@ llmsmith.agent.tool package
 Submodules
 ----------
 
+llmsmith.agent.tool.cohere module
+---------------------------------
+
+.. automodule:: llmsmith.agent.tool.cohere
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.agent.tool.gemini module
 ---------------------------------
 

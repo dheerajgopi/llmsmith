@@ -20,6 +20,14 @@ llmsmith.task.textgen.claude module
    :undoc-members:
    :show-inheritance:
 
+llmsmith.task.textgen.cohere module
+-----------------------------------
+
+.. automodule:: llmsmith.task.textgen.cohere
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.task.textgen.errors module
 -----------------------------------
 

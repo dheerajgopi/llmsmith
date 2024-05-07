@@ -12,6 +12,14 @@ Subpackages
 Submodules
 ----------
 
+llmsmith.agent.function.cohere module
+-------------------------------------
+
+.. automodule:: llmsmith.agent.function.cohere
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.agent.function.gemini module
 -------------------------------------
 
