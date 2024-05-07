@@ -5,7 +5,7 @@ try:
     from google.generativeai.types.safety_types import SafetySettingOptions
 except ImportError:
     raise ImportError(
-        "The 'google.generativeai' library is required to use GeminiTextGenOptions. You can install it with `pip install \"llmsmith[gemini]\"`"
+        "The 'google.generativeai' library is required to use Gemini LLMs. You can install it with `pip install \"llmsmith[gemini]\"`"
     )
 
 

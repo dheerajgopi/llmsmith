@@ -4,7 +4,7 @@ try:
     from anthropic.types.message_create_params import Metadata
 except ImportError:
     raise ImportError(
-        "The 'anthropic' library is required to use ClaudeTextGenOptions. You can install it with `pip install \"llmsmith[claude]\"`"
+        "The 'anthropic' library is required to use Claude LLMs. You can install it with `pip install \"llmsmith[claude]\"`"
     )
 
 

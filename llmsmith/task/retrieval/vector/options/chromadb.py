@@ -4,7 +4,7 @@ try:
     from chromadb import Where, WhereDocument
 except ImportError:
     raise ImportError(
-        "The 'chromadb-client' library is required to use ChromaDBRetriever. You can install it with `pip install \"llmsmith[chromadb]\"`"
+        "The 'chromadb-client' library is required to use ChromaDB. You can install it with `pip install \"llmsmith[chromadb]\"`"
     )
 
 

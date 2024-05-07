@@ -6,7 +6,7 @@ try:
     from openai.types.beta.assistant_tool_param import AssistantToolParam
 except ImportError:
     raise ImportError(
-        "The 'openai' library is required to use OpenAITool. You can install it with `pip install \"llmsmith[openai]\"`"
+        "The 'openai' library is required to use OpenAI LLMs. You can install it with `pip install \"llmsmith[openai]\"`"
     )
 
 

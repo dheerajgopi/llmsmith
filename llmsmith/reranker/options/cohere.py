@@ -4,7 +4,7 @@ try:
     from cohere.core.request_options import RequestOptions
 except ImportError:
     raise ImportError(
-        "The 'cohere' library is required to use CohereRerankerOptions. You can install it with `pip install \"llmsmith[cohere]\"`"
+        "The 'cohere' library is required to use Cohere reranker. You can install it with `pip install \"llmsmith[cohere]\"`"
     )
 
 

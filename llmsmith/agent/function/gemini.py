@@ -9,7 +9,7 @@ try:
     from google.generativeai import GenerativeModel
 except ImportError:
     raise ImportError(
-        "The 'google.generativeai' library is required to use GeminiFunctionAgent. You can install it with `pip install \"llmsmith[gemini]\"`"
+        "The 'google.generativeai' library is required to use Gemini LLMs. You can install it with `pip install \"llmsmith[gemini]\"`"
     )
 
 import logging

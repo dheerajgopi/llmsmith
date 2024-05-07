@@ -6,7 +6,7 @@ try:
     from anthropic.types.message import Message
 except ImportError:
     raise ImportError(
-        "The 'anthropic' library is required to use ClaudeTextGenTask. You can install it with `pip install \"llmsmith[claude]\"`"
+        "The 'anthropic' library is required to use Claude LLMs. You can install it with `pip install \"llmsmith[claude]\"`"
     )
 
 from llmsmith.task.base import Task

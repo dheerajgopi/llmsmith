@@ -12,7 +12,7 @@ try:
     from cohere.types.rerank_response import RerankResponse
 except ImportError:
     raise ImportError(
-        "The 'cohere' library is required to use CohereReranker. You can install it with `pip install \"llmsmith[cohere]\"`"
+        "The 'cohere' library is required to use Cohere reranker. You can install it with `pip install \"llmsmith[cohere]\"`"
     )
 
 

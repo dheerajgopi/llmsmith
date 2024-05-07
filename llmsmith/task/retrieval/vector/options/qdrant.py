@@ -9,7 +9,7 @@ try:
     )
 except ImportError:
     raise ImportError(
-        "The 'qdrant-client' library is required to use QdrantRetriever. You can install it with `pip install \"llmsmith[qdrant]\"`"
+        "The 'qdrant-client' library is required to use Qdrant. You can install it with `pip install \"llmsmith[qdrant]\"`"
     )
 
 

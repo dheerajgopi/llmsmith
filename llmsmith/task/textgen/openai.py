@@ -13,7 +13,7 @@ try:
     from openai.types.chat.chat_completion_tool_param import ChatCompletionToolParam
 except ImportError:
     raise ImportError(
-        "The 'openai' library is required to use OpenAITextGenTask. You can install it with `pip install \"llmsmith[openai]\"`"
+        "The 'openai' library is required to use OpenAI LLMs. You can install it with `pip install \"llmsmith[openai]\"`"
     )
 
 from llmsmith.task.base import Task

@@ -5,7 +5,7 @@ try:
     from google.ai.generativelanguage_v1beta.types import FunctionDeclaration
 except ImportError:
     raise ImportError(
-        "The 'google.generativeai' library is required to use GeminiTool. You can install it with `pip install \"llmsmith[gemini]\"`"
+        "The 'google.generativeai' library is required to use Gemini LLMs. You can install it with `pip install \"llmsmith[gemini]\"`"
     )
 
 

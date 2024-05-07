@@ -7,7 +7,7 @@ try:
     )
 except ImportError:
     raise ImportError(
-        "The 'openai' library is required to use OpenAITextGenOptions. You can install it with `pip install \"llmsmith[openai]\"`"
+        "The 'openai' library is required to use OpenAI LLMs. You can install it with `pip install \"llmsmith[openai]\"`"
     )
 
 

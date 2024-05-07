@@ -4,7 +4,7 @@ try:
     from openai.types.beta.threads import Run
 except ImportError:
     raise ImportError(
-        "The 'openai' library is required to use OpenAIFunctionAgent. You can install it with `pip install \"llmsmith[openai]\"`"
+        "The 'openai' library is required to use OpenAI LLMs. You can install it with `pip install \"llmsmith[openai]\"`"
     )
 
 import json
