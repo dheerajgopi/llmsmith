@@ -16,8 +16,8 @@ build:
 
       # Install poetry:
       - asdf plugin add poetry
-      - asdf install poetry latest
-      - asdf global poetry latest
+      - asdf install poetry 1.8.2
+      - asdf global poetry 1.8.2
       - poetry config virtualenvs.create false
     post_install:
       # Install dependencies
