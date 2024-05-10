@@ -39,3 +39,27 @@ This project uses [ruff](https://docs.astral.sh/ruff/) for linting and formattin
 
 `ruff check . --fix` - Runs the linter.
 `ruff format` - Runs the formatter.
+
+## How you can help
+
+LLMSmith currently supports only a handful of LLMs and vector databases, and new LLMs are coming up as fast as JS frameworks.
+Below is the list of LLMs and vector databases for which support has to be added in LLMSmith in the immediate future.
+
+LLMs:
+
+- Llama
+- Mixtral
+- Grok
+- AWS Bedrock
+
+Vector databases:
+
+- Pinecone
+- Weaviate
+- PgVector
+- Elasticsearch
+- MongoDB Atlas
+
+This is where you can help :)
+
+All contributions (no matter if small) are always welcome.
