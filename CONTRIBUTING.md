@@ -54,7 +54,6 @@ LLMs:
 
 Vector databases:
 
-- Pinecone
 - Weaviate
 - PgVector
 - Elasticsearch
