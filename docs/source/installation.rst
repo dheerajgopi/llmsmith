@@ -19,4 +19,5 @@ Here's the list of extra dependencies supported by LLMSmith:
 * `chromadb`
 * `qdrant`
 * `cohere`
+* `pinecone`
 * `all` (downloads all extra dependencies)
