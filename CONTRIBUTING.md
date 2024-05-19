@@ -47,8 +47,7 @@ Below is the list of LLMs and vector databases for which support has to be added
 
 LLMs:
 
-- Llama
-- Mixtral
+- Mistral
 - Grok
 - AWS Bedrock
 
