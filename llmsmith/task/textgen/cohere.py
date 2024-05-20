@@ -92,12 +92,14 @@ class BaseCohereChat:
                 "Failed to generate text",
                 failure_reason=self._block_reason_str(llm_reply),
             )
-        
+
         llm_tool_calls = llm_reply.tool_calls or []
         function_calls: dict[str, FunctionCall] = {}
         for tool_call in llm_tool_calls:
             tool_id = str(uuid4())
-            function_calls[tool_id] = FunctionCall(id=tool_id, name=tool_call.name, args=tool_call.parameters or {})
+            function_calls[tool_id] = FunctionCall(
+                id=tool_id, name=tool_call.name, args=tool_call.parameters or {}
+            )
 
         log.debug(f"chat response output value: {llm_reply.text}")
 

@@ -85,12 +85,12 @@ class PineconeRetriever(Task[str, str]):
         embeddings = self.embedding_func([task_input.content])
 
         res: QueryResponse = self.index.query(
-            vector=embeddings,
-            include_metadata=True,
-            **query_options
+            vector=embeddings, include_metadata=True, **query_options
         )
 
-        docs = [doc.get("metadata", {}).get(self.text_field_name) for doc in res["matches"]]
+        docs = [
+            doc.get("metadata", {}).get(self.text_field_name) for doc in res["matches"]
+        ]
         if self._reranker:
             docs = await self._reranker.rerank(query=task_input.content, docs=docs)
 

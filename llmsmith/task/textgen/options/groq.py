@@ -47,7 +47,7 @@ def _completion_create_options_dict(options: GroqTextGenOptions) -> dict:
 
     if not opt.get("model"):
         opt["model"] = "llama3-70b-8192"
-    
+
     if not opt.get("tool_choice"):
         opt["tool_choice"] = "auto"
 
