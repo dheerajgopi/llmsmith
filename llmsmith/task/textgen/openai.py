@@ -59,9 +59,9 @@ class BaseOpenAIChat:
         Generates text using OpenAI LLM using the given input.
 
         :param messages_payload: The input messages for the chat.
-        :type messages_payload: List[:class:`openai.types.chat.chat_completion_tool_param.ChatCompletionMessageParam`]
+        :type messages_payload: List[:class:`openai.types.chat.chat_completion_message_param.ChatCompletionMessageParam`]
         :param tools: Tools (functions) which can be used by the LLM.
-        :type tools: List[:class:`openai.types.chat.chat_completion_tool_param.ChatCompletionMessageParam`], optional
+        :type tools: List[:class:`openai.types.chat.chat_completion_tool_param.ChatCompletionToolParam`], optional
         :raises TextGenFailedError: If AI fails to generate text based on the prompt.
         :returns: chat response from the LLM.
         :rtype: :class:`llmsmith.task.models.ChatResponse`
