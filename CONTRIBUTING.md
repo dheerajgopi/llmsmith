@@ -45,10 +45,10 @@ This project uses [ruff](https://docs.astral.sh/ruff/) for linting and formattin
 LLMSmith currently supports only a handful of LLMs and vector databases, and new LLMs are coming up as fast as JS frameworks.
 Below is the list of LLMs and vector databases for which support has to be added in LLMSmith in the immediate future.
 
-LLMs:
+LLM Vendors:
 
-- Mistral
-- Grok
+- Mistral AI
+- Groq
 - AWS Bedrock
 
 Vector databases:
