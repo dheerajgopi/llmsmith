@@ -28,7 +28,7 @@ log = logging.getLogger(__name__)
 
 # Default options for text generation using LLMs in Groq Cloud.
 default_options: GroqTextGenOptions = GroqTextGenOptions(
-    model="llama3-8b-8192", temperature=0.3
+    model="llama3-70b-8192", temperature=0.3
 )
 
 
@@ -99,8 +99,9 @@ class BaseGroqChat:
                 text=output_choice_with_func_call.message.content,
                 raw_output=llm_reply,
                 function_calls={
-                    tool.function.name: FunctionCall(
+                    tool.id: FunctionCall(
                         id=tool.id,
+                        name=tool.function.name,
                         args=(
                             json.loads(tool.function.arguments)
                             if tool.function.arguments
