@@ -124,9 +124,9 @@ class CohereFunctionAgent(Task[str, str]):
             )
 
             # Execute functions (tools)
-            for func_name, func in func_calls.items():
-                func_output = self._tool_callables[func_name](**func.args)
-                tool_call = ToolCall(name=func_name, parameters=func.args)
+            for _, func in func_calls.items():
+                func_output = self._tool_callables[func.name](**func.args)
+                tool_call = ToolCall(name=func.name, parameters=func.args)
                 func_results.append(
                     {"call": tool_call, "outputs": [{"answer": func_output}]}
                 )

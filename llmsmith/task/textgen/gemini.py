@@ -1,5 +1,6 @@
 import logging
 from typing import List, Union
+from uuid import uuid4
 
 from llmsmith.task.textgen.errors import PromptBlockedException, TextGenFailedException
 
@@ -109,12 +110,14 @@ class BaseGeminiChat:
         )
 
         if function_call:
+            tool_id = str(uuid4())
             return ChatResponse(
                 text=None,
                 raw_output=llm_reply,
                 function_calls={
-                    function_call.name: LLMFunctionCall(
-                        id=None,
+                    tool_id: LLMFunctionCall(
+                        id=tool_id,
+                        name=function_call.name,
                         args={prop: val for prop, val in function_call.args.items()}
                         if function_call.args
                         else {},

@@ -18,7 +18,8 @@ class TaskOutput(Generic[T]):
 
 @dataclass
 class FunctionCall:
-    id: Union[str, None]
+    id: str
+    name: str
     args: dict[str, Any]
 
 
