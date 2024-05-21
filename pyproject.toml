@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "LLMSmith"
-version = "0.6.0"
+version = "0.7.0"
 description = "Lightweight Python library designed for developing functionalities powered by Large Language Models (LLMs)"
 authors = ["Dheeraj Gopinath <dheeraj.gopinath@gmail.com>"]
 readme = "README.md"
