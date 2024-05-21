@@ -24,6 +24,7 @@ Here's the list of extra dependencies supported by LLMSmith:
 - `qdrant`
 - `cohere`
 - `pinecone`
+- `groq`
 - `all` (downloads all extra dependencies)
 
 ## Example

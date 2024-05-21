@@ -1,7 +1,7 @@
 Function Calling Agents
 =======================
 
-``LLMSmith`` comes with an abstraction for agent loops based on function calling capabilities of LLMs (supports OpenAI and Gemini as of now).
+``LLMSmith`` comes with an abstraction for agent loops based on function calling capabilities of LLMs (supports OpenAI, Gemini, Cohere and Groq as of now).
 So, instead of writing the agent loops manually, simply create an instance of LLMSmith function calling agent by passing the LLM client along with its configuration and LLM specific tool declarations.
 The LLMSmith function calling agents can also be added as a ``task`` to an LLMSmith ``job``.
 

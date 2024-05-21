@@ -20,6 +20,14 @@ llmsmith.agent.tool.gemini module
    :undoc-members:
    :show-inheritance:
 
+llmsmith.agent.tool.groq module
+-------------------------------
+
+.. automodule:: llmsmith.agent.tool.groq
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.agent.tool.openai module
 ---------------------------------
 
