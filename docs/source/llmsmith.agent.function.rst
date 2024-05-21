@@ -28,6 +28,14 @@ llmsmith.agent.function.gemini module
    :undoc-members:
    :show-inheritance:
 
+llmsmith.agent.function.groq module
+-----------------------------------
+
+.. automodule:: llmsmith.agent.function.groq
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.agent.function.openai module
 -------------------------------------
 

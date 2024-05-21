@@ -25,6 +25,7 @@ python-dotenv = "^1.0.1"
 qdrant-client = {version = "^1.8.2", optional = true}
 cohere = {version = "^5.3.2", optional = true}
 pinecone-client = {version = "^4.1.0", optional = true}
+groq = {version = "^0.6.0", optional = true}
 
 [tool.poetry.extras]
 openai = ["openai"]
@@ -34,7 +35,8 @@ chromadb = ["chromadb-client", "onnxruntime", "protobuf", "tokenizers"]
 qdrant = ["qdrant-client"]
 cohere = ["cohere"]
 pinecone = ["pinecone-client"]
-all = ["openai", "anthropic", "google-generativeai", "chromadb-client", "onnxruntime", "protobuf", "tokenizers", "qdrant-client", "cohere", "pinecone-client"]
+groq = ["groq"]
+all = ["openai", "anthropic", "google-generativeai", "chromadb-client", "onnxruntime", "protobuf", "tokenizers", "qdrant-client", "cohere", "pinecone-client", "groq"]
 
 [tool.poetry.group.dev]
 optional = true

@@ -108,7 +108,7 @@ class GeminiFunctionAgent(Task[str, str]):
             # Exit condition: If no function calls are required.
             if not func_calls:
                 log.debug(
-                    f"GeminiFunctionAgent turn-{turn+1} | Exiting agent loop with text output: f{chat_response.text}"
+                    f"GeminiFunctionAgent turn-{turn+1} | Exiting agent loop with text output: {chat_response.text}"
                 )
                 return TaskOutput(
                     content=chat_response.text,
@@ -119,15 +119,15 @@ class GeminiFunctionAgent(Task[str, str]):
                 f"GeminiFunctionAgent turn-{turn+1} | Function call required: {func_calls}"
             )
 
-            for func_name, func in func_calls.items():
-                func_output = self._tool_callables[func_name](**func.args)
+            for _, func in func_calls.items():
+                func_output = self._tool_callables[func.name](**func.args)
                 messages_payload.append(
                     {
                         "role": "function",
                         "parts": [
                             Part(
                                 function_call=FunctionCall(
-                                    name=func_name, args=func.args
+                                    name=func.name, args=func.args
                                 )
                             )
                         ],
@@ -139,7 +139,7 @@ class GeminiFunctionAgent(Task[str, str]):
                         "parts": [
                             Part(
                                 function_response=FunctionResponse(
-                                    name=func_name, response={"result": func_output}
+                                    name=func.name, response={"result": func_output}
                                 )
                             )
                         ],

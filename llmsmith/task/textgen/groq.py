@@ -5,63 +5,63 @@ from typing import List, Union
 from llmsmith.task.textgen.errors import TextGenFailedException
 
 try:
-    import openai
-    from openai.types.chat.chat_completion import ChatCompletion
-    from openai.types.chat.chat_completion_message_param import (
-        ChatCompletionMessageParam,
+    import groq
+    from groq.types.chat.chat_completion import ChatCompletion
+    from groq.types.chat.completion_create_params import (
+        Message,
+        Tool,
     )
-    from openai.types.chat.chat_completion_tool_param import ChatCompletionToolParam
 except ImportError:
     raise ImportError(
-        "The 'openai' library is required to use OpenAI LLMs. You can install it with `pip install \"llmsmith[openai]\"`"
+        "The 'groq' library is required to use LLMs in Groq. You can install it with `pip install \"llmsmith[groq]\"`"
     )
 
 from llmsmith.task.base import Task
 from llmsmith.task.models import ChatResponse, FunctionCall, TaskInput, TaskOutput
-from llmsmith.task.textgen.options.openai import (
-    OpenAITextGenOptions,
+from llmsmith.task.textgen.options.groq import (
+    GroqTextGenOptions,
     _completion_create_options_dict,
 )
 
 
 log = logging.getLogger(__name__)
 
-# Default options for text generation using OpenAI's LLMs.
-default_options: OpenAITextGenOptions = OpenAITextGenOptions(
-    model="gpt-3.5-turbo", temperature=0.3
+# Default options for text generation using LLMs in Groq Cloud.
+default_options: GroqTextGenOptions = GroqTextGenOptions(
+    model="llama3-70b-8192", temperature=0.3
 )
 
 
-class BaseOpenAIChat:
+class BaseGroqChat:
     """
-    Base class for chatting using OpenAI Large Language Models (LLMs).
+    Base class for chatting using Groq Large Language Models (LLMs).
 
-    :param llm: An instance of the Async OpenAI client.
-    :type llm: :class:`openai.AsyncOpenAI`
-    :param llm_options: A dictionary of options to pass to the OpenAI LLM.
-    :type llm_options: :class:`llmsmith.task.textgen.options.openai.OpenAITextGenOptions`, optional
+    :param llm: An instance of the async Groq client.
+    :type llm: :class:`groq.AsyncGroq`
+    :param llm_options: A dictionary of options to pass to the Groq LLM.
+    :type llm_options: :class:`llmsmith.task.textgen.options.groq.GroqTextGenOptions`, optional
     """
 
     def __init__(
         self,
-        llm: openai.AsyncOpenAI,
-        llm_options: OpenAITextGenOptions = default_options,
+        llm: groq.AsyncGroq,
+        llm_options: GroqTextGenOptions = default_options,
     ) -> None:
-        self.llm: openai.AsyncOpenAI = llm
-        self.llm_options: OpenAITextGenOptions = llm_options or default_options
+        self.llm: groq.AsyncGroq = llm
+        self.llm_options: GroqTextGenOptions = llm_options or default_options
 
     async def chat(
         self,
-        messages_payload: List[ChatCompletionMessageParam],
-        tools: Union[List[ChatCompletionToolParam], None] = None,
+        messages_payload: List[Message],
+        tools: Union[List[Tool], None] = None,
     ) -> ChatResponse:
         """
-        Generates text using OpenAI LLM using the given input.
+        Generates text using Groq LLM using the given input.
 
         :param messages_payload: The input messages for the chat.
-        :type messages_payload: List[:class:`openai.types.chat.chat_completion_message_param.ChatCompletionMessageParam`]
+        :type messages_payload: List[:class:`groq.types.chat.completion_create_params.Message`]
         :param tools: Tools (functions) which can be used by the LLM.
-        :type tools: List[:class:`openai.types.chat.chat_completion_tool_param.ChatCompletionToolParam`], optional
+        :type tools: List[:class:`groq.types.chat.completion_create_params.Tool`], optional
         :raises TextGenFailedError: If AI fails to generate text based on the prompt.
         :returns: chat response from the LLM.
         :rtype: :class:`llmsmith.task.models.ChatResponse`
@@ -80,14 +80,14 @@ class BaseOpenAIChat:
         )
 
         log.debug(
-            f"OpenAI chat request: PAYLOAD: {messages_payload}\n OPTIONS: {chat_completion_options}"
+            f"Groq chat request: PAYLOAD: {messages_payload}\n OPTIONS: {chat_completion_options}"
         )
 
         llm_reply: ChatCompletion = await self.llm.chat.completions.create(
             messages=messages_payload, tools=tools, **chat_completion_options
         )
 
-        log.debug(f"OpenAI chat response: {llm_reply}")
+        log.debug(f"Groq chat response: {llm_reply}")
 
         output_choice_with_func_call = next(
             (c for c in llm_reply.choices if c.finish_reason == "tool_calls"),
@@ -99,8 +99,9 @@ class BaseOpenAIChat:
                 text=output_choice_with_func_call.message.content,
                 raw_output=llm_reply,
                 function_calls={
-                    tool.function.name: FunctionCall(
+                    tool.id: FunctionCall(
                         id=tool.id,
+                        name=tool.function.name,
                         args=(
                             json.loads(tool.function.arguments)
                             if tool.function.arguments
@@ -128,31 +129,31 @@ class BaseOpenAIChat:
         return ChatResponse(text=output_content, raw_output=llm_reply)
 
 
-class OpenAITextGenTask(Task[str, str]):
+class GroqTextGenTask(Task[str, str]):
     """
-    Task for generating text using OpenAI's Large Language Models (LLMs).
+    Task for generating text using Groq Cloud's Large Language Models (LLMs).
 
     :param name: The name of the task.
     :type name: str
-    :param llm: An instance of the Async OpenAI client.
-    :type llm: :class:`openai.AsyncOpenAI`
-    :param llm_options: A dictionary of options to pass to the OpenAI LLM.
-    :type llm_options: :class:`llmsmith.task.textgen.options.openai.OpenAITextGenOptions`, optional
+    :param llm: An instance of the Async Groq client.
+    :type llm: :class:`groq.AsyncGroq`
+    :param llm_options: A dictionary of options to pass to the LLM in Groq Cloud.
+    :type llm_options: :class:`llmsmith.task.textgen.options.groq.GroqTextGenOptions`, optional
     :raises ValueError: If the name is empty.
     """
 
     def __init__(
         self,
         name: str,
-        llm: openai.AsyncOpenAI,
-        llm_options: OpenAITextGenOptions = default_options,
+        llm: groq.AsyncGroq,
+        llm_options: GroqTextGenOptions = default_options,
     ) -> None:
         super().__init__(name)
-        self._chat = BaseOpenAIChat(llm, llm_options)
+        self._chat = BaseGroqChat(llm, llm_options)
 
     async def execute(self, task_input: TaskInput[str]) -> TaskOutput[str]:
         """
-        Generates text using OpenAI LLM using the given input.
+        Generates text using Groq LLM using the given input.
 
         :param task_input: The input to the task.
         :type task_input: :class:`llmsmith.task.models.TaskInput[str]`

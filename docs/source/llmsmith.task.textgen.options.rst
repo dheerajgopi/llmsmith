@@ -28,6 +28,14 @@ llmsmith.task.textgen.options.gemini module
    :undoc-members:
    :show-inheritance:
 
+llmsmith.task.textgen.options.groq module
+-----------------------------------------
+
+.. automodule:: llmsmith.task.textgen.options.groq
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.task.textgen.options.openai module
 -------------------------------------------
 

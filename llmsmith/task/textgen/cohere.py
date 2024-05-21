@@ -1,5 +1,6 @@
 import logging
 from typing import List, Union
+from uuid import uuid4
 
 from llmsmith.task.textgen.errors import TextGenFailedException
 from llmsmith.task.textgen.options.cohere import CohereTextGenOptions
@@ -92,14 +93,13 @@ class BaseCohereChat:
                 failure_reason=self._block_reason_str(llm_reply),
             )
 
-        function_calls: dict[str, FunctionCall] = (
-            {
-                tool_call.name: FunctionCall(id=None, args=tool_call.parameters or {})
-                for tool_call in llm_reply.tool_calls
-            }
-            if llm_reply.tool_calls
-            else None
-        )
+        llm_tool_calls = llm_reply.tool_calls or []
+        function_calls: dict[str, FunctionCall] = {}
+        for tool_call in llm_tool_calls:
+            tool_id = str(uuid4())
+            function_calls[tool_id] = FunctionCall(
+                id=tool_id, name=tool_call.name, args=tool_call.parameters or {}
+            )
 
         log.debug(f"chat response output value: {llm_reply.text}")
 

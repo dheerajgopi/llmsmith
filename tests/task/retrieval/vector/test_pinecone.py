@@ -8,7 +8,6 @@ from pinecone.core.client.model.scored_vector import ScoredVector
 from llmsmith.task.models import TaskInput
 from llmsmith.task.retrieval.vector.options.pinecone import PineconeQueryOptions
 from llmsmith.task.retrieval.vector.pinecone import PineconeRetriever
-from llmsmith.task.retrieval.vector.qdrant import QdrantRetriever
 
 
 class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
@@ -19,9 +18,11 @@ class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
             side_effect=mock_index,
         )
 
-        mock_index.query.return_value = QueryResponse(matches=[
-            ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}), 
-            ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"})]
+        mock_index.query.return_value = QueryResponse(
+            matches=[
+                ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}),
+                ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"}),
+            ]
         )
         retriever = PineconeRetriever(
             name="test",
@@ -34,16 +35,16 @@ class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
 
         mock_index.query.assert_called_with(
             vector=[[1]],
-            include_metadata=True, 
-            top_k=10, 
-            namespace=None, 
-            filter=None, 
-            include_values=False, 
-            sparse_vector=None
+            include_metadata=True,
+            top_k=10,
+            namespace=None,
+            filter=None,
+            include_values=False,
+            sparse_vector=None,
         )
 
         assert output.content == "retrieved_doc1\n---\nretrieved_doc2"
-    
+
     async def test_execute_with_custom_query_options(self):
         mock_index = mock.Mock()
         mock.patch(
@@ -51,28 +52,30 @@ class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
             side_effect=mock_index,
         )
 
-        mock_index.query.return_value = QueryResponse(matches=[
-            ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}), 
-            ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"})]
+        mock_index.query.return_value = QueryResponse(
+            matches=[
+                ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}),
+                ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"}),
+            ]
         )
         retriever = PineconeRetriever(
             name="test",
             index=mock_index,
             embedding_func=lambda x: [[1]],
             text_field_name="doc",
-            query_options=PineconeQueryOptions(namespace="ns", top_k=5)
+            query_options=PineconeQueryOptions(namespace="ns", top_k=5),
         )
 
         output = await retriever.execute(TaskInput("query"))
 
         mock_index.query.assert_called_with(
             vector=[[1]],
-            include_metadata=True, 
-            top_k=5, 
-            namespace="ns", 
-            filter=None, 
-            include_values=False, 
-            sparse_vector=None
+            include_metadata=True,
+            top_k=5,
+            namespace="ns",
+            filter=None,
+            include_values=False,
+            sparse_vector=None,
         )
 
         assert output.content == "retrieved_doc1\n---\nretrieved_doc2"
@@ -84,9 +87,11 @@ class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
             side_effect=mock_index,
         )
 
-        mock_index.query.return_value = QueryResponse(matches=[
-            ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}), 
-            ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"})]
+        mock_index.query.return_value = QueryResponse(
+            matches=[
+                ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}),
+                ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"}),
+            ]
         )
         retriever = PineconeRetriever(
             name="test",
@@ -100,12 +105,12 @@ class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
 
         mock_index.query.assert_called_with(
             vector=[[1]],
-            include_metadata=True, 
-            top_k=10, 
-            namespace=None, 
-            filter=None, 
-            include_values=False, 
-            sparse_vector=None
+            include_metadata=True,
+            top_k=10,
+            namespace=None,
+            filter=None,
+            include_values=False,
+            sparse_vector=None,
         )
 
         assert (
@@ -121,9 +126,11 @@ class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
             side_effect=mock_index,
         )
 
-        mock_index.query.return_value = QueryResponse(matches=[
-            ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}), 
-            ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"})]
+        mock_index.query.return_value = QueryResponse(
+            matches=[
+                ScoredVector(id="id1", metadata={"doc": "retrieved_doc1"}),
+                ScoredVector(id="id2", metadata={"doc": "retrieved_doc2"}),
+            ]
         )
         mock.patch(
             "llmsmith.task.retrieval.vector.pinecone.Reranker",
@@ -136,19 +143,19 @@ class PineconeRetrieverTest(unittest.IsolatedAsyncioTestCase):
             index=mock_index,
             embedding_func=lambda x: [[1]],
             text_field_name="doc",
-            reranker=mock_reranker
+            reranker=mock_reranker,
         )
 
         output = await retriever.execute(TaskInput("query"))
 
         mock_index.query.assert_called_with(
             vector=[[1]],
-            include_metadata=True, 
-            top_k=10, 
-            namespace=None, 
-            filter=None, 
-            include_values=False, 
-            sparse_vector=None
+            include_metadata=True,
+            top_k=10,
+            namespace=None,
+            filter=None,
+            include_values=False,
+            sparse_vector=None,
         )
 
         mock_reranker.rerank.assert_called_with(

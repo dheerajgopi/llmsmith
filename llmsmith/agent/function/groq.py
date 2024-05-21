@@ -1,32 +1,28 @@
 try:
-    import cohere
-    from cohere import ChatRequestToolResultsItem
-    from cohere.types.tool import Tool
-    from cohere.types.tool_call import ToolCall
-    from cohere.types.chat_message import ChatMessage
-    from cohere.types.non_streamed_chat_response import NonStreamedChatResponse
+    import groq
 except ImportError:
     raise ImportError(
-        "The 'cohere' library is required to use Cohere LLMs. You can install it with `pip install \"llmsmith[cohere]\"`"
+        "The 'groq' library is required to use LLMs in Groq. You can install it with `pip install \"llmsmith[groq]\"`"
     )
 
+import json
 import logging
 from typing import Callable, List
 
 from llmsmith.agent.errors import MaxTurnsReachedException
-from llmsmith.agent.tool.cohere import CohereTool
+from llmsmith.agent.tool.groq import GroqTool
 from llmsmith.task.base import Task
 from llmsmith.task.models import ChatResponse, TaskInput, TaskOutput
-from llmsmith.task.textgen.cohere import BaseCohereChat
-from llmsmith.task.textgen.options.cohere import CohereTextGenOptions
+from llmsmith.task.textgen.groq import BaseGroqChat
+from llmsmith.task.textgen.options.groq import GroqTextGenOptions
 
 
 log = logging.getLogger(__name__)
 
 
-class CohereFunctionAgent(Task[str, str]):
+class GroqFunctionAgent(Task[str, str]):
     """
-    Agent based on function calling capability of Cohere LLMs.
+    Agent based on function calling capability of LLMs in Groq.
     Agent will loop until one of the conditions are met:
 
     * If the LLM does not choose any tools (function) and simply returns text content in the response.
@@ -34,12 +30,12 @@ class CohereFunctionAgent(Task[str, str]):
 
     :param name: The name of the task.
     :type name: str
-    :param llm: An instance of the Cohere client.
-    :type llm: :class:`cohere.AsyncClient`
-    :param llm_options: A dictionary of options to pass to the Cohere LLM.
-    :type llm_options: :class:`llmsmith.task.textgen.options.cohere.CohereTextGenOptions`, optional
-    :param tools: List of tools (functions) which can be used by the Cohere LLMs. Each tool contains both the declaration and the actual callable.
-    :type tools: :class:`llmsmith.agent.tool.cohere.CohereTool`
+    :param llm: An instance of the async Groq client.
+    :type llm: :class:`groq.AsyncGroq`
+    :param llm_options: A dictionary of options to pass to the LLM in Groq.
+    :type llm_options: :class:`llmsmith.task.textgen.options.groq.GroqTextGenOptions`, optional
+    :param tools: List of tools (functions) which can be used by the LLMs in Groq. Each tool contains both the declaration and the actual callable.
+    :type tools: :class:`llmsmith.agent.tool.groq.GroqTool`
     :param max_turns: Maximum number of turns allowed in the agent loop. Defaults to 5.
     :type max_turns: str
     :raises ValueError: If the name is empty or if max_turns is less than 1.
@@ -48,9 +44,9 @@ class CohereFunctionAgent(Task[str, str]):
     def __init__(
         self,
         name: str,
-        llm: cohere.AsyncClient,
-        llm_options: CohereTextGenOptions,
-        tools: List[CohereTool] = [],
+        llm: groq.AsyncGroq,
+        llm_options: GroqTextGenOptions,
+        tools: List[GroqTool] = [],
         max_turns: int = 5,
     ) -> None:
         super().__init__(name)
@@ -58,21 +54,13 @@ class CohereFunctionAgent(Task[str, str]):
         if max_turns <= 0:
             raise ValueError("max_turns should be 1 or above")
 
-        self._chat = BaseCohereChat(llm, llm_options)
+        self._chat = BaseGroqChat(llm, llm_options)
         self.max_turns = max_turns
-
-        # Convert to Tool class if declaration is of dict type
-        for tool in tools:
-            if isinstance(tool.declaration, dict):
-                tool.declaration = Tool(
-                    name=tool.declaration.get("name"),
-                    description=tool.declaration.get("description"),
-                    parameter_definitions=tool.declaration.get("parameter_definitions"),
-                )
-
-        self.llm_tools = [tool.declaration for tool in tools]
+        self.llm_tools = [tool.declaration for tool in tools] if tools else None
         self._tool_callables: dict[str, Callable] = {
-            tool.declaration.name: tool.callable for tool in tools
+            tool.declaration["function"]["name"]: tool.callable
+            for tool in tools
+            if tool.declaration["type"] == "function"
         }
 
     async def execute(self, task_input: TaskInput[str]) -> TaskOutput[str]:
@@ -94,25 +82,20 @@ class CohereFunctionAgent(Task[str, str]):
             raise ValueError("task_input.content should be of type 'str'")
 
         llm_input_content: str = task_input.content
-        func_results: List[ChatRequestToolResultsItem] = []
-        chat_hist: List[ChatMessage] = []
+        messages_payload: List[dict] = [{"role": "user", "content": llm_input_content}]
 
         for turn in range(self.max_turns):
             chat_response: ChatResponse = await self._chat.chat(
-                message=llm_input_content,
+                messages_payload=messages_payload,
                 tools=self.llm_tools,
-                tool_results=func_results or None,
-                chat_history=chat_hist or None,
             )
 
-            raw_output: NonStreamedChatResponse = chat_response.raw_output
-            chat_hist = raw_output.chat_history
             func_calls = chat_response.function_calls or {}
 
             # Exit condition: If no function calls are required.
             if not func_calls:
                 log.debug(
-                    f"CohereFunctionAgent turn-{turn+1} | Exiting agent loop with text output: {chat_response.text}"
+                    f"GroqFunctionAgent turn-{turn+1} | Exiting agent loop with text output: {chat_response.text}"
                 )
                 return TaskOutput(
                     content=chat_response.text,
@@ -120,15 +103,37 @@ class CohereFunctionAgent(Task[str, str]):
                 )
 
             log.debug(
-                f"CohereFunctionAgent turn-{turn+1} | Function call required: {func_calls}"
+                f"GroqFunctionAgent turn-{turn+1} | Function call required: {func_calls}"
+            )
+
+            # Add required function calls in the messages payload required for the next LLM call
+            messages_payload.append(
+                {
+                    "role": "assistant",
+                    "tool_calls": [
+                        {
+                            "id": tool_id,
+                            "function": {
+                                "name": func.name,
+                                "arguments": json.dumps(func.args),
+                            },
+                            "type": "function",
+                        }
+                        for tool_id, func in func_calls.items()
+                    ],
+                }
             )
 
             # Execute functions (tools)
-            for _, func in func_calls.items():
+            for tool_id, func in func_calls.items():
                 func_output = self._tool_callables[func.name](**func.args)
-                tool_call = ToolCall(name=func.name, parameters=func.args)
-                func_results.append(
-                    {"call": tool_call, "outputs": [{"answer": func_output}]}
+                messages_payload.append(
+                    {
+                        "tool_call_id": tool_id,
+                        "role": "tool",
+                        "name": func.name,
+                        "content": str(func_output),
+                    }
                 )
 
         raise MaxTurnsReachedException()

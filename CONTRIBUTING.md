@@ -48,7 +48,6 @@ Below is the list of LLMs and vector databases for which support has to be added
 LLM Vendors:
 
 - Mistral AI
-- Groq
 - AWS Bedrock
 
 Vector databases:
