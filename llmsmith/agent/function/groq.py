@@ -5,6 +5,7 @@ except ImportError:
         "The 'groq' library is required to use LLMs in Groq. You can install it with `pip install \"llmsmith[groq]\"`"
     )
 
+import json
 import logging
 from typing import Callable, List
 
@@ -94,7 +95,7 @@ class GroqFunctionAgent(Task[str, str]):
             # Exit condition: If no function calls are required.
             if not func_calls:
                 log.debug(
-                    f"GroqFunctionAgent turn-{turn+1} | Exiting agent loop with text output: f{chat_response.text}"
+                    f"GroqFunctionAgent turn-{turn+1} | Exiting agent loop with text output: {chat_response.text}"
                 )
                 return TaskOutput(
                     content=chat_response.text,
@@ -103,6 +104,24 @@ class GroqFunctionAgent(Task[str, str]):
 
             log.debug(
                 f"GroqFunctionAgent turn-{turn+1} | Function call required: {func_calls}"
+            )
+
+            # Add required function calls in the messages payload required for the next LLM call
+            messages_payload.append(
+                {
+                    "role": "assistant",
+                    "tool_calls": [
+                        {
+                            "id": tool_id,
+                            "function": {
+                                "name": func.name,
+                                "arguments": json.dumps(func.args),
+                            },
+                            "type": "function",
+                        }
+                        for tool_id, func in func_calls.items()
+                    ],
+                }
             )
 
             # Execute functions (tools)

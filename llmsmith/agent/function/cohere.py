@@ -112,7 +112,7 @@ class CohereFunctionAgent(Task[str, str]):
             # Exit condition: If no function calls are required.
             if not func_calls:
                 log.debug(
-                    f"CohereFunctionAgent turn-{turn+1} | Exiting agent loop with text output: f{chat_response.text}"
+                    f"CohereFunctionAgent turn-{turn+1} | Exiting agent loop with text output: {chat_response.text}"
                 )
                 return TaskOutput(
                     content=chat_response.text,
