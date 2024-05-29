@@ -21,7 +21,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
-# Default options for querying a Qdrant collection.
+# Default options for querying a ChromaDB collection.
 default_options: ChromaDBQueryOptions = ChromaDBQueryOptions(n_results=10)
 
 

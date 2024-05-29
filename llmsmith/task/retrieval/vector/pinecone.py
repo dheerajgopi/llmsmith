@@ -21,7 +21,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
-# Default options for querying a Qdrant collection.
+# Default options for querying a Pinecone index.
 default_options: PineconeQueryOptions = PineconeQueryOptions(top_k=10)
 
 
