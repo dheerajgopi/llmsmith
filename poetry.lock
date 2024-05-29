@@ -1420,6 +1420,19 @@ files = [
 ]
 
 [[package]]
+name = "pgvector"
+version = "0.2.5"
+description = "pgvector support for Python"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "pgvector-0.2.5-py2.py3-none-any.whl", hash = "sha256:5e5e93ec4d3c45ab1fa388729d56c602f6966296e19deee8878928c6d567e41b"},
+]
+
+[package.dependencies]
+numpy = "*"
+
+[[package]]
 name = "pinecone-client"
 version = "4.1.0"
 description = "Pinecone client and SDK"
@@ -1561,6 +1574,29 @@ files = [
     {file = "protobuf-3.20.3-py2.py3-none-any.whl", hash = "sha256:a7ca6d488aa8ff7f329d4c545b2dbad8ac31464f1d8b1c87ad1346717731e4db"},
     {file = "protobuf-3.20.3.tar.gz", hash = "sha256:2e3427429c9cffebf259491be0af70189607f365c2f41c7c3764af6f337105f2"},
 ]
+
+[[package]]
+name = "psycopg"
+version = "3.1.19"
+description = "PostgreSQL database adapter for Python"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "psycopg-3.1.19-py3-none-any.whl", hash = "sha256:dca5e5521c859f6606686432ae1c94e8766d29cc91f2ee595378c510cc5b0731"},
+    {file = "psycopg-3.1.19.tar.gz", hash = "sha256:92d7b78ad82426cdcf1a0440678209faa890c6e1721361c2f8901f0dccd62961"},
+]
+
+[package.dependencies]
+typing-extensions = ">=4.1"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+binary = ["psycopg-binary (==3.1.19)"]
+c = ["psycopg-c (==3.1.19)"]
+dev = ["black (>=24.1.0)", "codespell (>=2.2)", "dnspython (>=2.1)", "flake8 (>=4.0)", "mypy (>=1.4.1)", "types-setuptools (>=57.4)", "wheel (>=0.37)"]
+docs = ["Sphinx (>=5.0)", "furo (==2022.6.21)", "sphinx-autobuild (>=2021.3.14)", "sphinx-autodoc-typehints (>=1.12)"]
+pool = ["psycopg-pool"]
+test = ["anyio (>=3.6.2,<4.0)", "mypy (>=1.4.1)", "pproxy (>=2.7)", "pytest (>=6.2.5)", "pytest-cov (>=3.0)", "pytest-randomly (>=3.5)"]
 
 [[package]]
 name = "pyasn1"
@@ -2366,6 +2402,17 @@ files = [
 ]
 
 [[package]]
+name = "tzdata"
+version = "2024.1"
+description = "Provider of IANA time zone data"
+optional = true
+python-versions = ">=2"
+files = [
+    {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
+    {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.2.1"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -2477,17 +2524,18 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.link
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [extras]
-all = ["anthropic", "chromadb-client", "cohere", "google-generativeai", "groq", "onnxruntime", "openai", "pinecone-client", "protobuf", "qdrant-client", "tokenizers"]
+all = ["anthropic", "chromadb-client", "cohere", "google-generativeai", "groq", "onnxruntime", "openai", "pgvector", "pinecone-client", "protobuf", "psycopg", "qdrant-client", "tokenizers"]
 chromadb = ["chromadb-client", "onnxruntime", "protobuf", "tokenizers"]
 claude = ["anthropic"]
 cohere = ["cohere"]
 gemini = ["google-generativeai"]
 groq = ["groq"]
 openai = ["openai"]
+pgvector = ["pgvector", "psycopg"]
 pinecone = ["pinecone-client"]
 qdrant = ["qdrant-client"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "228a3235b0f3cf08644477379779db129cad724d0e164f7a9b7ed45da5601110"
+content-hash = "4ad402796d4842952813fd823143cb2b442ddd5c3e3f4679ca2f8b8829b4a8c7"
