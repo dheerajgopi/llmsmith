@@ -53,7 +53,6 @@ LLM Vendors:
 Vector databases:
 
 - Weaviate
-- PgVector
 - Elasticsearch
 - MongoDB Atlas
 

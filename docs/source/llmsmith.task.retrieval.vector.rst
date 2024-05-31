@@ -28,6 +28,14 @@ llmsmith.task.retrieval.vector.chromadb module
    :undoc-members:
    :show-inheritance:
 
+llmsmith.task.retrieval.vector.pgvector module
+----------------------------------------------
+
+.. automodule:: llmsmith.task.retrieval.vector.pgvector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 llmsmith.task.retrieval.vector.pinecone module
 ----------------------------------------------
 

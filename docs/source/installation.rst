@@ -21,4 +21,5 @@ Here's the list of extra dependencies supported by LLMSmith:
 * `cohere`
 * `pinecone`
 * `groq`
+* `pgvector`
 * `all` (downloads all extra dependencies)
