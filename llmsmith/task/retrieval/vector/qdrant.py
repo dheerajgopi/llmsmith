@@ -25,6 +25,79 @@ log = logging.getLogger(__name__)
 default_options: QdrantQueryOptions = QdrantQueryOptions(limit=10, with_vectors=False)
 
 
+class BaseQdrantTask(Task[str, List[str]]):
+    """
+    Task for retrieving documents from a collection in Qdrant.
+
+    :param name: The name of the task.
+    :type name: str
+    :param client: Qdrant client.
+    :type client: :class:`qdrant_client.AsyncQdrantClient`
+    :param collection_name: Qdrant collection name.
+    :type collection_name: str
+    :param embedding_func: Embedding function
+    :type embedding_func: :class:`llmsmith.task.retrieval.vector.base.EmbeddingFunc`
+    :param embedded_field_name: name of the field in the document on which embeddedings are created while uploading data to the Qdrant collection
+    :type embedded_field_name: str
+    :param query_options: A dictionary of options to pass to the Qdrant client for querying.
+    :type query_options: :class:`llmsmith.task.retrieval.vector.options.qdrant.QdrantQueryOptions`, optional
+    :param reranker: Rerank the documents based on the query used to retrieve the documents.
+    :type reranker: :class:`llmsmith.reranker.base.Reranker`, optional
+    """
+
+    def __init__(
+        self,
+        name: str,
+        client: AsyncQdrantClient,
+        collection_name: str,
+        embedding_func: EmbeddingFunc,
+        embedded_field_name: str,
+        query_options: QdrantQueryOptions = default_options,
+        reranker: Reranker = None,
+    ) -> None:
+        super().__init__(name)
+
+        if not embedding_func:
+            raise ValueError("Embedding function ('embedding_func') is required")
+
+        self.client = client
+        self.collection_name = collection_name
+        self.embedding_func = embedding_func
+        self.embedded_field_name = embedded_field_name
+        self.query_options = query_options
+        self._reranker = reranker
+
+    async def execute(self, task_input: TaskInput[str]) -> TaskOutput[List[str]]:
+        """
+        Executes the task of retrieving documents from the qdrant collection.
+
+        :param task_input: The input for the task.
+        :type task_input: :class:`llmsmith.task.models.TaskInput[str]`
+        :return: The output of the task, which includes the processed result and the raw output from Qdrant.
+        :rtype: :class:`llmsmith.task.models.TaskOutput[List[str]]`
+        """
+
+        query_options: dict = _query_options_dict(self.query_options)
+
+        log.debug(
+            f"Qdrant query request: input string: {task_input.content}\n OPTIONS: {query_options}"
+        )
+        embeddings = self.embedding_func([task_input.content])
+
+        res: List[ScoredPoint] = await self.client.search(
+            collection_name=self.collection_name,
+            query_vector=embeddings[0],
+            **query_options,
+        )
+
+        docs = [doc.payload.get(self.embedded_field_name, "") for doc in res]
+
+        if self._reranker:
+            docs = await self._reranker.rerank(query=task_input.content, docs=docs)
+
+        return TaskOutput(content=docs, raw_output=res)
+
+
 class QdrantRetriever(Task[str, str]):
     """
     Task for retrieving documents from a collection in Qdrant.
@@ -60,15 +133,15 @@ class QdrantRetriever(Task[str, str]):
     ) -> None:
         super().__init__(name)
 
-        if not embedding_func:
-            raise ValueError("Embedding function ('embedding_func') is required")
-
-        self.client = client
-        self.collection_name = collection_name
-        self.embedding_func = embedding_func
-        self.embedded_field_name = embedded_field_name
-        self.query_options = query_options
-        self._reranker = reranker
+        self._task = BaseQdrantTask(
+            name=name,
+            client=client,
+            collection_name=collection_name,
+            embedding_func=embedding_func,
+            embedded_field_name=embedded_field_name,
+            query_options=query_options,
+            reranker=reranker,
+        )
 
         if not doc_processing_func:
             self.doc_processing_func = default_doc_processor
@@ -85,24 +158,7 @@ class QdrantRetriever(Task[str, str]):
         :rtype: :class:`llmsmith.task.models.TaskOutput[str]`
         """
 
-        query_options: dict = _query_options_dict(self.query_options)
+        task_res: TaskOutput[List[str]] = await self._task.execute(task_input)
 
-        log.debug(
-            f"Qdrant query request: input string: {task_input.content}\n OPTIONS: {query_options}"
-        )
-        embeddings = self.embedding_func([task_input.content])
-
-        res: List[ScoredPoint] = await self.client.search(
-            collection_name=self.collection_name,
-            query_vector=embeddings[0],
-            **query_options,
-        )
-
-        docs = [doc.payload.get(self.embedded_field_name, "") for doc in res]
-
-        if self._reranker:
-            docs = await self._reranker.rerank(query=task_input.content, docs=docs)
-
-        processed_res: str = self.doc_processing_func(docs)
-
-        return TaskOutput(content=processed_res, raw_output=res)
+        processed_res: str = self.doc_processing_func(task_res.content)
+        return TaskOutput(content=processed_res, raw_output=task_res.raw_output)

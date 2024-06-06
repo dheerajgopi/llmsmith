@@ -25,6 +25,70 @@ log = logging.getLogger(__name__)
 default_options: ChromaDBQueryOptions = ChromaDBQueryOptions(n_results=10)
 
 
+class BaseChromaDBTask(Task[str, List[str]]):
+    """
+    Task for retrieving documents from a collection in ChromaDB.
+
+    :param name: The name of the task.
+    :type name: str
+    :param collection: The collection to retrieve documents from.
+    :type collection: :class:`chromadb.Collection`
+    :param embedding_func: Embedding function
+    :type embedding_func: :class:`llmsmith.task.retrieval.vector.base.EmbeddingFunc`
+    :param query_options: A dictionary of options to pass to the ChromaDB collection client for querying.
+    :type query_options: :class:`llmsmith.task.retrieval.vector.options.chromadb.ChromaDBQueryOptions`, optional
+    :param reranker: Rerank the documents based on the query used to retrieve the documents.
+    :type reranker: :class:`llmsmith.reranker.base.Reranker`, optional
+    """
+
+    def __init__(
+        self,
+        name: str,
+        collection: Collection,
+        embedding_func: EmbeddingFunc,
+        query_options: ChromaDBQueryOptions = default_options,
+        reranker: Reranker = None,
+    ) -> None:
+        super().__init__(name)
+
+        if not embedding_func:
+            raise ValueError("Embedding function ('embedding_func') is required")
+
+        self.collection = collection
+        self.embedding_func = embedding_func
+        self.query_options = query_options
+        self._reranker = reranker
+
+    async def execute(self, task_input: TaskInput[str]) -> TaskOutput[List[str]]:
+        """
+        Executes the task of retrieving documents from the chromadb collection.
+
+        :param task_input: The input for the task.
+        :type task_input: :class:`llmsmith.task.models.TaskInput[str]`
+        :return: The output of the task, which includes the list of documents from chromadb.
+        :rtype: :class:`llmsmith.task.models.TaskOutput[List[str]]`
+        """
+        query_options: dict = _query_options_dict(self.query_options)
+
+        log.debug(
+            f"ChromaDB query request: input string: {task_input.content}\n OPTIONS: {query_options}"
+        )
+
+        embeddings = self.embedding_func([task_input.content])
+
+        res: QueryResult = self.collection.query(
+            query_embeddings=embeddings,
+            include=["metadatas", "documents", "distances"],
+            **query_options,
+        )
+
+        docs = [doc for doc in res["documents"][0]]
+        if self._reranker:
+            docs = await self._reranker.rerank(query=task_input.content, docs=docs)
+
+        return TaskOutput(content=docs, raw_output=res)
+
+
 class ChromaDBRetriever(Task[str, str]):
     """
     Task for retrieving documents from a collection in ChromaDB.
@@ -54,14 +118,15 @@ class ChromaDBRetriever(Task[str, str]):
     ) -> None:
         super().__init__(name)
 
-        if not embedding_func:
-            raise ValueError("Embedding function ('embedding_func') is required")
+        self._task = BaseChromaDBTask(
+            name=name,
+            collection=collection,
+            embedding_func=embedding_func,
+            query_options=query_options,
+            reranker=reranker,
+        )
 
-        self.collection = collection
-        self.embedding_func = embedding_func
         self.doc_processing_func = doc_processing_func
-        self.query_options = query_options
-        self._reranker = reranker
 
     async def execute(self, task_input: TaskInput[str]) -> TaskOutput[str]:
         """
@@ -72,23 +137,7 @@ class ChromaDBRetriever(Task[str, str]):
         :return: The output of the task, which includes the processed result and the raw output from chromadb.
         :rtype: :class:`llmsmith.task.models.TaskOutput[str]`
         """
-        query_options: dict = _query_options_dict(self.query_options)
+        task_res: TaskOutput[List[str]] = await self._task.execute(task_input)
 
-        log.debug(
-            f"ChromaDB query request: input string: {task_input.content}\n OPTIONS: {query_options}"
-        )
-
-        embeddings = self.embedding_func([task_input.content])
-
-        res: QueryResult = self.collection.query(
-            query_embeddings=embeddings,
-            include=["metadatas", "documents", "distances"],
-            **query_options,
-        )
-
-        docs = [doc for doc in res["documents"][0]]
-        if self._reranker:
-            docs = await self._reranker.rerank(query=task_input.content, docs=docs)
-
-        processed_res: str = self.doc_processing_func(docs)
-        return TaskOutput(content=processed_res, raw_output=res)
+        processed_res: str = self.doc_processing_func(task_res.content)
+        return TaskOutput(content=processed_res, raw_output=task_res.raw_output)
